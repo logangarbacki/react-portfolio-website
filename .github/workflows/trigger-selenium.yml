@@ -6,10 +6,11 @@ on:
       - main
 
 jobs:
-  notify-selenium-tests:
+  trigger-selenium:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Trigger Selenium Tests Repository
+      - name: Trigger Selenium Repo Workflow
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.SELENIUM_REPO_PAT }}
