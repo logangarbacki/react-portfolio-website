@@ -1,0 +1,17 @@
+name: Trigger Selenium Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify-selenium-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Selenium Tests Repository
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.SELENIUM_REPO_PAT }}
+          repository: logangarbacki/react-portfolio-selenium-tests
+          event-type: run-selenium-tests

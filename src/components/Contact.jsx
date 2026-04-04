@@ -29,9 +29,9 @@ export default function Contact() {
           </p>
         </div>
         <div className="contact-right reveal">
-          <a href="mailto:devlogan2005@gmail.com" className="contact-email">
+          <a href="mailto:contact@logangarbacki.dev" className="contact-email">
             <span className="email-label">primary</span>
-            devlogan2005@gmail.com
+            contact@logangarbacki.dev
             <span className="email-arrow">↗</span>
           </a>
           <div className="contact-links">

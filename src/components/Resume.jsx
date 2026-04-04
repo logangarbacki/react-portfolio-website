@@ -47,7 +47,7 @@ export default function Resume() {
             Detail-oriented QA Engineer with hands-on automation experience, direct codebase contributions,
             and five industry certifications. Currently expanding into front-end development.
           </p>
-          <a href="/Logan_Garbacki_Resume.pdf" download className="btn-download">
+          <a href="/Logan_Garbacki_Resume_Pdf.pdf" download className="btn-download">
             <span>↓</span>
             <span>Download PDF Resume</span>
           </a>

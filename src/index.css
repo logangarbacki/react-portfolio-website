@@ -52,7 +52,6 @@ img { max-width: 100%; display: block; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--cyan); }
 
-/* Grain overlay */
 body::before {
   content: '';
   position: fixed;
@@ -63,7 +62,6 @@ body::before {
   opacity: 0.4;
 }
 
-/* Scroll reveal — uses animation not transition so re-renders can't reset opacity */
 .reveal {
   opacity: 0;
   transform: translateY(32px);
