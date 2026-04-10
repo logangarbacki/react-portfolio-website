@@ -1,28 +1,76 @@
-# React Portfolio - Logan Garbacki
+# React Portfolio — Logan Garbacki
 
-This is my personal portfolio website, built with **React** and **Vite**. It showcases my professional experience, projects, and skills as a QA Automation and Front-End developer.
+I’m a QA Automation Engineer — this portfolio doubles as both a frontend project and the system under test for my automation framework.
 
-## 🚀 Features
+👉 https://logangarbacki.dev  
 
-- Animated canvas dot grid background
-- Custom cursor and scroll-reveal animations
-- Fully responsive design for desktop and mobile
-- Highlights projects, certifications, and skills
-- Easy navigation to resume and LinkedIn
+---
 
-## 🛠 Tech Stack
+## ⚙️ Real problems solved
 
-- **Frontend:** React, Vite, CSS
-- **Languages:** JavaScript, HTML, CSS
-- **Other Tools:** Git, GitHub
+### Scroll-based animations (IntersectionObserver)
+Sections animate into view as the user scrolls. This improves UX, but introduces timing challenges and rendering edge cases.
 
-## 📁 Project Structure
-portfolio/
-├─ public/ # Static assets (images, favicon, icons)
-├─ src/ # React components and main code
-├─ .gitignore # Git ignore file
-├─ index.html # Main HTML file
-├─ package.json # Project dependencies
-├─ package-lock.json # Exact dependency versions
-├─ vite.config.js # Vite configuration
-└─ README.md # Project documentation
+**Solution:** Components are structured to ensure animations trigger reliably across screen sizes and do not block layout or interaction.
+
+---
+
+### Performance + Vite optimization
+Fast load time is critical for first impressions.
+
+**Solution:** Built with **Vite** for fast development and optimized production builds, reducing bundle size and improving load speed.
+
+---
+
+### Responsive layout across devices
+Portfolio content needs to remain readable and visually consistent on all screen sizes.
+
+**Solution:** Mobile-first layout with flexible CSS and breakpoints to ensure consistent spacing, alignment, and usability.
+
+---
+
+### UI consistency + maintainability
+As the site grows, keeping styles and components consistent becomes harder.
+
+**Solution:** Reusable React components with clear separation between layout, logic, and styling.
+
+---
+
+## 🧪 What this site demonstrates
+
+This isn’t just a portfolio — it reflects how I build software:
+
+- Clean, maintainable component structure  
+- Strong attention to UX (animations, navigation flow)  
+- Performance awareness  
+- Real-world testability (paired with automation)
+
+---
+
+## 🧱 Stack
+
+- **React + Vite** — component-based UI and fast tooling  
+- **JavaScript (ES6+)** — application logic  
+- **HTML5 + CSS3** — structure and styling  
+- **Git + GitHub** — version control and deployment  
+
+---
+
+## 🚀 Deployment
+
+Deployed as a static frontend application with continuous updates via GitHub.
+
+Paired with an automated Selenium test suite to validate core functionality after changes.
+
+---
+
+## 📁 Project structure
+├── .github/ # GitHub workflows (CI/CD)
+├── public/ # Static assets (images, favicon, icons)
+├── src/ # React components, hooks, and main logic
+├── .gitignore # Git ignore rules
+├── README.md # Project documentation
+├── index.html # Root HTML file
+├── package-lock.json # Exact dependency versions
+├── package.json # Dependencies and scripts
+└── vite.config.js # Vite configuration
