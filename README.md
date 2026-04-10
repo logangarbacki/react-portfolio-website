@@ -64,6 +64,8 @@ Paired with an automated Selenium test suite to validate core functionality afte
 
 ---
 ## Project Structure
+
+```
 portfolio/
 ├── .github/
 │   └── workflows/      # GitHub Actions CI/CD
@@ -75,3 +77,4 @@ portfolio/
 ├── package-lock.json   # Exact dependency versions
 ├── package.json        # Dependencies and scripts
 └── vite.config.js      # Vite configuration
+```
