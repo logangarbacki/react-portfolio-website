@@ -65,9 +65,11 @@ Paired with an automated Selenium test suite to validate core functionality afte
 ---
 
 ## 📁 Project structure
-├── .github/ # GitHub workflows (CI/CD)
+portfolio/
+├── .github/
+│ └── workflows/ # GitHub Actions CI/CD
 ├── public/ # Static assets (images, favicon, icons)
-├── src/ # React components, hooks, and main logic
+├── src/ # React components and main code
 ├── .gitignore # Git ignore rules
 ├── README.md # Project documentation
 ├── index.html # Root HTML file
