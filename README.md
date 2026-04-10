@@ -63,7 +63,7 @@ Deployed as a static frontend application with continuous updates via GitHub.
 Paired with an automated Selenium test suite to validate core functionality after changes.
 
 ---
-
+## Project Structure
 portfolio/
 ├── .github/
 │   └── workflows/      # GitHub Actions CI/CD
