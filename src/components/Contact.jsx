@@ -2,31 +2,80 @@ import { useState } from 'react';
 import './Contact.css';
 import SectionLog from './SectionLog';
 
+// Formspree endpoint. Override via VITE_CONTACT_ENDPOINT in env vars if needed.
+const CONTACT_ENDPOINT =
+  import.meta.env.VITE_CONTACT_ENDPOINT ||
+  'https://formspree.io/f/xvzlkowp';
+
+// Tests append ?test-form=1 so they exercise UI flow without hitting the real endpoint.
+const TEST_MODE =
+  typeof window !== 'undefined' &&
+  new URLSearchParams(window.location.search).get('test-form') === '1';
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [successText, setSuccessText] = useState('');
+  const [error, setError] = useState(null);
+
+  function typeSuccess(text) {
+    let i = 0;
+    const typer = setInterval(() => {
+      i++;
+      setSuccessText(text.slice(0, i));
+      if (i >= text.length) clearInterval(typer);
+    }, 30);
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (submitting) return;
     setSubmitting(true);
+    setError(null);
 
-    // TODO: wire to real handler (Formspree / Vercel function / Resend)
-    await sleep(700);
+    const formData = new FormData(e.currentTarget);
+    const payload = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message'),
+    };
 
-    setSubmitting(false);
-    setSuccess(true);
+    if (TEST_MODE) {
+      await sleep(700);
+      setSubmitting(false);
+      setSuccess(true);
+      typeSuccess('POST /contact → ok');
+      return;
+    }
 
-    const target = 'POST /contact → ok';
-    let i = 0;
-    const typer = setInterval(() => {
-      i++;
-      setSuccessText(target.slice(0, i));
-      if (i >= target.length) clearInterval(typer);
-    }, 30);
+    try {
+      const res = await fetch(CONTACT_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          data?.error ||
+            data?.errors?.[0]?.message ||
+            `Server returned ${res.status}`
+        );
+      }
+
+      setSuccess(true);
+      typeSuccess(`POST /contact → ok (${res.status})`);
+    } catch (err) {
+      setError(err.message || 'Send failed. Email contact@logangarbacki.dev directly.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   function handleKey(e) {
@@ -97,6 +146,11 @@ export default function Contact() {
                 </button>
                 <span className="hint">enter to submit · esc to clear</span>
               </div>
+              {error && (
+                <div className="form-error" data-testid="contact-error">
+                  <span className="prefix">[err]</span> {error}
+                </div>
+              )}
             </form>
           )}
 

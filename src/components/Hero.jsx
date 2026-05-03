@@ -125,11 +125,11 @@ export default function Hero({ start, run, allure, ready }) {
           {splitChars('Logan Garbacki.')}
         </h1>
         <p className="hero-summary" data-testid="hero-summary">
-          I write Selenium frameworks in C# — and the React applications they're aimed at.
-          Two halves of the same job:{' '}
-          <em className={drawUnderline ? 'draw' : ''}>quality and code,</em> end to end.
-          Hands-on across <span className="accent">test automation</span>,{' '}
-          <span className="accent">CI/CD</span>, and the apps under test.
+          Engineer who works the whole stack —{' '}
+          <span className="accent">QA automation</span>,{' '}
+          <span className="accent">full-stack development</span>,{' '}
+          <span className="accent">CI/CD pipelines</span>, anything that ships.{' '}
+          <em className={drawUnderline ? 'draw' : ''}>Quality and code,</em> end to end.
         </p>
         <div className="hero-actions">
           <a className="cmd" href="#projects" data-testid="hero-cta-projects">
