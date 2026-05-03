@@ -1,0 +1,1668 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>v3 · Logan Garbacki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Spline+Sans+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #14110b;          /* deep warm dark — main body */
+    --paper: #1d1a13;        /* cards, slight elevation */
+    --terminal: #0a0805;     /* deeper bars: status, card heads, footer */
+    --ink: #e8e3d4;          /* primary cream text */
+    --ink-2: #c9c2b3;        /* secondary text */
+    --muted: #7a7268;        /* mid */
+    --muted-2: #4d4943;      /* deeper muted */
+    --rule: #2a2620;         /* card borders */
+    --rule-soft: #1f1c17;    /* dashed dividers */
+    --pass: #5fd388;         /* terminal green */
+    --pass-bg: #163a25;      /* dark green wash */
+    --warn: #d8a04a;         /* amber */
+    --warn-bg: #3a2a10;      /* dark amber wash */
+    --fail: #e36b5e;
+    --accent: #c8a468;       /* warm gold */
+
+    --mono: 'Spline Sans Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --serif: 'Instrument Serif', 'Times New Roman', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  /* dot grid lives behind the particle canvas */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(232, 227, 212, 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: 0 0;
+    pointer-events: none;
+    z-index: -2;
+  }
+  /* particle canvas — anchored to document, scrolls with page */
+  .bg-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+    z-index: -1;
+  }
+  ::selection { background: var(--accent); color: var(--terminal); }
+  a { color: inherit; text-decoration: none; }
+  code { font-family: var(--mono); }
+
+  /* ── Boot overlay ─────────────────────────────── */
+  .boot {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--terminal);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 32px;
+    transition: opacity 0.45s ease, clip-path 0.6s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .boot.done { opacity: 0; clip-path: inset(100% 0 0 0); pointer-events: none; }
+  .boot-inner { width: 100%; max-width: 520px; }
+  .boot-prompt {
+    color: #b89a64;
+    margin-bottom: 18px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .boot-line {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    margin-bottom: 6px;
+    opacity: 0;
+    line-height: 1.55;
+  }
+  .boot-line.show { opacity: 1; transition: opacity 0.15s; }
+  .boot-line .tag {
+    color: #6c6660;
+    flex-shrink: 0;
+    width: 64px;
+    font-size: 12px;
+  }
+  .boot-line .tag.ok { color: #5fd388; }
+  .boot-line .tag.fail { color: #d8a04a; }
+  .boot-line .text { color: #d8d3c4; font-size: 13px; }
+  .boot-line .pending {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: #d8d3c4;
+    margin-left: 4px;
+    transform: translateY(2px);
+    animation: blink 0.85s steps(1) infinite;
+  }
+  .boot-ready {
+    margin-top: 14px;
+    color: #5fd388;
+    opacity: 0;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+  }
+  .boot-ready.show { opacity: 1; transition: opacity 0.2s; }
+  .boot-skip {
+    position: absolute;
+    bottom: 24px;
+    right: 28px;
+    color: #6c6660;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+  .boot-skip:hover { color: #d8d3c4; }
+
+  /* page content reveal post-boot */
+  body.booting > *:not(.boot) { opacity: 0; }
+  body:not(.booting) > *:not(.boot):not(.scanline) {
+    animation: page-rise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+  }
+  @keyframes page-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* one-shot scanline after boot */
+  .scanline {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 80px;
+    background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(95, 211, 136, 0.04) 30%,
+      rgba(95, 211, 136, 0.16) 50%,
+      rgba(95, 211, 136, 0.04) 70%,
+      transparent 100%);
+    z-index: 9998;
+    pointer-events: none;
+    transform: translateY(-80px);
+    opacity: 0;
+  }
+  .scanline.run {
+    animation: scan 1.4s cubic-bezier(0.5, 0, 0.5, 1) 1 forwards;
+  }
+  @keyframes scan {
+    0%   { transform: translateY(-80px); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(110vh); opacity: 0; }
+  }
+
+  /* ── Status bar (top) ─────────────────────────────── */
+  .status-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--terminal);
+    color: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    letter-spacing: 0.01em;
+    border-bottom: 1px solid var(--rule);
+  }
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #5fd388;
+    box-shadow: 0 0 0 0 rgba(95, 211, 136, 0.55);
+    animation: pulse 2.4s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(95,211,136,0.55); }
+    70%  { box-shadow: 0 0 0 7px rgba(95,211,136,0); }
+    100% { box-shadow: 0 0 0 0 rgba(95,211,136,0); }
+  }
+  .status-bar .v { color: var(--ink); }
+  .status-bar .sep { color: var(--muted-2); }
+  .status-bar .right { margin-left: auto; display: flex; gap: 18px; align-items: center; }
+  .live-tag {
+    color: var(--muted-2);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .live-tag.live { color: #5fd388; }
+  .live-tag.fallback { color: #d8a04a; }
+
+  /* ── Nav ─────────────────────────────── */
+  .nav {
+    padding: 20px 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+  .nav-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .nav-name .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
+    margin-left: 2px;
+    transform: translateY(2px);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .nav-links { display: flex; gap: 28px; color: var(--muted); }
+  .nav-links a {
+    transition: color 0.15s;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+  }
+  .nav-links a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* ── Hero ─────────────────────────────── */
+  .hero {
+    padding: 56px 56px 88px;
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .hero-left .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .hero-left .label::before {
+    content: '$ ';
+    color: var(--accent);
+  }
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(64px, 9vw, 116px);
+    font-weight: 400;
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    margin-bottom: 28px;
+  }
+  .hero-name .char {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(28px) rotate(2deg);
+  }
+  .hero-name.cascade .char {
+    animation: char-rise 0.65s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  @keyframes char-rise {
+    to { opacity: 1; transform: translateY(0) rotate(0); }
+  }
+
+  .hero-left .label .type-cursor {
+    display: inline-block;
+    width: 6px;
+    height: 11px;
+    background: var(--accent);
+    margin-left: 2px;
+    transform: translateY(1px);
+    animation: blink 0.7s steps(1) infinite;
+  }
+  .hero-left .label .type-cursor.done { display: none; }
+  .hero-summary {
+    font-family: var(--mono);
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    max-width: 52ch;
+    margin-bottom: 40px;
+  }
+  .hero-summary em {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink);
+    position: relative;
+    display: inline-block;
+  }
+  .hero-summary em::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 1px;
+    width: 100%;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  .hero-summary em.draw::after {
+    animation: line-draw 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  @keyframes line-draw {
+    to { transform: scaleX(1); }
+  }
+  .hero-summary .accent {
+    color: var(--accent);
+  }
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .cmd {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 12px 18px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    transition: background 0.18s, transform 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.01em;
+  }
+  .cmd:hover { background: var(--accent); color: var(--terminal); transform: translateY(-1px); }
+  .cmd.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .cmd.ghost:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .cmd .caret { color: #b89a64; }
+
+  /* ── Live status card (hero right) ─────────────────────────────── */
+  .status-card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    align-self: start;
+    margin-top: 40px;
+    position: relative;
+  }
+  .status-card-hint {
+    position: absolute;
+    top: -20px;
+    left: 0;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .status-card-hint::before {
+    content: '↳ ';
+    color: var(--accent);
+  }
+  .status-card-head {
+    background: var(--terminal);
+    color: var(--ink);
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 0.02em;
+  }
+  .status-card-head .caret { color: #b89a64; }
+  .status-card-head .badge {
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--pass);
+    color: #fff;
+    transition: background 0.3s;
+  }
+  .status-card-head .badge.fail { background: #b8453a; }
+  .status-card-head .badge.pending { background: var(--warn); }
+  .status-card-body {
+    padding: 18px 20px 20px;
+  }
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--rule-soft);
+    font-family: var(--mono);
+    font-size: 13px;
+    opacity: 0;
+    transform: translateX(-6px);
+    animation: metric-in 0.45s ease forwards;
+  }
+  .metric-row:nth-child(1) { animation-delay: 0.6s; }
+  .metric-row:nth-child(2) { animation-delay: 0.7s; }
+  .metric-row:nth-child(3) { animation-delay: 0.8s; }
+  .metric-row:nth-child(4) { animation-delay: 0.9s; }
+  .metric-row:nth-child(5) { animation-delay: 1.0s; }
+  .metric-row:nth-child(6) { animation-delay: 1.1s; }
+  @keyframes metric-in {
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .metric-row:last-child { border-bottom: 0; }
+  .metric-row .k {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .metric-row .v { color: var(--ink); }
+  .metric-row .v.pass { color: var(--pass); }
+  .metric-row .v.fail { color: #b8453a; }
+  .metric-row .v.accent { color: var(--accent); }
+  .metric-row .v .num {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 500;
+    margin-right: 4px;
+  }
+  .uptime-row {
+    display: flex;
+    gap: 2px;
+    padding-top: 14px;
+  }
+  .uptime-row .bar {
+    flex: 1;
+    height: 18px;
+    background: var(--pass);
+    border-radius: 1px;
+    opacity: 0;
+    animation: fade-in 0.5s ease forwards;
+  }
+  .uptime-row .bar.warn { background: var(--warn); }
+  .uptime-legend {
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Section log header ─────────────────────────────── */
+  .log {
+    padding: 0 56px;
+    margin-top: 48px;
+    margin-bottom: 28px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .log > * {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .log.run > * {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .log.run > *:nth-child(1) { transition-delay: 0s; }
+  .log.run > *:nth-child(2) { transition-delay: 0.1s; }
+  .log.run > *:nth-child(3) { transition-delay: 0.2s; }
+  .log.run > *:nth-child(4) { transition-delay: 0.3s; }
+  .log.run > *:nth-child(5) { transition-delay: 0.5s; }
+  .log .ts { color: var(--muted-2); }
+  .log .level {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    padding: 1px 8px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--ink-2);
+  }
+  .log .leader {
+    flex: 1;
+    border-bottom: 1px dotted var(--rule);
+    height: 1px;
+    margin: 0 4px;
+    align-self: center;
+  }
+  .log .ok { color: var(--pass); }
+
+  /* ── About ─────────────────────────────── */
+  .about {
+    padding: 0 56px 96px;
+    max-width: 740px;
+  }
+  .about p {
+    font-family: var(--mono);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--ink-2);
+    margin-bottom: 16px;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.7s cubic-bezier(0.2, 0.6, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.6, 0.2, 1);
+  }
+  .about p.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .about p:nth-child(2) { transition-delay: 0.15s; }
+  .about p em {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink);
+  }
+  .about p code {
+    background: var(--paper);
+    border: 1px solid var(--rule-soft);
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-size: 13.5px;
+  }
+
+  /* ── Marquee strip ─────────────────────────────── */
+  .marquee {
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    overflow: hidden;
+    background: var(--paper);
+    padding: 12px 0;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 48px;
+    white-space: nowrap;
+    animation: marquee 50s linear infinite;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .marquee-track span { flex-shrink: 0; }
+  .marquee-track span.dot { color: var(--accent); }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── Projects ─────────────────────────────── */
+  .projects { padding: 0 56px 96px; }
+  .project-card {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    margin-bottom: 14px;
+    transition: border-color 0.2s, transform 0.2s;
+    opacity: 0;
+    transform: translateY(20px);
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .project-card:hover { border-color: var(--ink); }
+  .project-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(184, 154, 100, 0.10), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.65s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .project-card:hover::before {
+    transform: translateX(100%);
+  }
+  .project-card > * { position: relative; z-index: 2; }
+  .project-head {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .project-num {
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .project-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--pass-bg);
+    color: var(--pass);
+    padding: 3px 9px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .project-status::before { content: '✓'; }
+  .project-status.dev {
+    background: var(--warn-bg);
+    color: var(--warn);
+  }
+  .project-status.dev::before {
+    content: '●';
+    animation: blink 1.6s steps(1) infinite;
+  }
+  .project-suite {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink);
+    flex: 1;
+    min-width: 200px;
+    line-height: 1.1;
+  }
+  .project-suite em { font-style: italic; color: var(--ink-2); }
+  .project-tail {
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .project-body {
+    padding: 18px 20px 20px;
+  }
+  .project-stack {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 0.01em;
+  }
+  .project-desc {
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    margin-bottom: 14px;
+    max-width: 70ch;
+  }
+  .project-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 4px;
+  }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid var(--rule);
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .link-row { display: flex; gap: 14px; }
+  .link-row a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+  }
+  .link-row a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── Contact ─────────────────────────────── */
+  .contact {
+    padding: 0 56px 120px;
+    max-width: 720px;
+  }
+  .contact-card {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .contact-card-head {
+    background: var(--terminal);
+    color: var(--ink);
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .contact-card-head .caret { color: #b89a64; }
+  .contact-card-head .badge {
+    background: var(--pass);
+    color: #fff;
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .contact-blurb {
+    padding: 22px 20px;
+    font-family: var(--mono);
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .contact-form {
+    padding: 8px 20px 20px;
+  }
+  .form-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .form-row:last-of-type { border-bottom: 0; }
+  .form-row .prompt {
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    width: 96px;
+    flex-shrink: 0;
+    padding-top: 6px;
+  }
+  .form-row input,
+  .form-row textarea {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px dashed var(--rule);
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink);
+    padding: 6px 4px;
+    outline: none;
+    transition: border-color 0.18s;
+    resize: vertical;
+    min-height: 30px;
+  }
+  .form-row textarea { min-height: 80px; }
+  .form-row input:focus,
+  .form-row textarea:focus {
+    border-bottom-color: var(--ink);
+  }
+  .form-row input::placeholder,
+  .form-row textarea::placeholder {
+    color: var(--muted-2);
+  }
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-top: 14px;
+  }
+  .form-actions .submit {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px 18px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.18s, transform 0.18s;
+  }
+  .form-actions .submit:hover { background: var(--accent); color: var(--terminal); transform: translateY(-1px); }
+  .form-actions .submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .form-actions .submit .caret { color: #b89a64; margin-right: 4px; }
+  .form-actions .hint {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  .form-success {
+    padding: 22px 20px;
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+  .form-success .ok-line { color: var(--pass); margin-bottom: 8px; }
+  .form-success .ok-line::before { content: '[200] '; color: var(--pass); }
+  .form-success .arrow { color: var(--accent); }
+
+  .contact-meta {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding: 14px 20px;
+    border-top: 1px solid var(--rule-soft);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .contact-meta a:hover { color: var(--accent); }
+
+  /* ── Footer ─────────────────────────────── */
+  .footer {
+    background: var(--terminal);
+    color: var(--muted);
+    padding: 26px 56px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-top: 1px solid var(--rule);
+  }
+  .footer .right { color: var(--muted-2); }
+
+  /* ── Animations ─────────────────────────────── */
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── Responsive ─────────────────────────────── */
+  @media (max-width: 920px) {
+    .hero { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px 64px; }
+    .nav, .log, .about, .projects, .contact, .footer { padding-left: 24px; padding-right: 24px; }
+    .status-bar { padding: 10px 18px; gap: 10px; flex-wrap: wrap; }
+    .status-bar .right { margin-left: 0; gap: 12px; }
+    .status-card { margin-top: 0; }
+    .nav-links { display: none; }
+    .form-row { flex-direction: column; gap: 4px; }
+    .form-row .prompt { width: auto; padding-top: 0; }
+  }
+</style>
+</head>
+<body class="booting">
+
+  <!-- ── Boot overlay ─────────────────────────────── -->
+  <div class="boot" id="boot">
+    <div class="boot-inner" id="bootInner">
+      <div class="boot-prompt">$ logangarbacki --boot</div>
+      <div class="boot-line" id="bl0"><span class="tag">[<span class="state">....</span>]</span><span class="text">init shell</span></div>
+      <div class="boot-line" id="bl1"><span class="tag">[<span class="state">....</span>]</span><span class="text">sync github actions</span></div>
+      <div class="boot-line" id="bl2"><span class="tag">[<span class="state">....</span>]</span><span class="text">sync allure summary</span></div>
+      <div class="boot-line" id="bl3"><span class="tag">[<span class="state">....</span>]</span><span class="text">mount view</span></div>
+      <div class="boot-ready" id="bootReady">> ready.</div>
+    </div>
+    <div class="boot-skip" id="bootSkip">click anywhere · skip</div>
+  </div>
+
+  <!-- background particle canvas -->
+  <canvas class="bg-canvas" id="bgCanvas" aria-hidden="true"></canvas>
+
+  <!-- one-shot scanline post-boot -->
+  <div class="scanline" id="scanline" aria-hidden="true"></div>
+
+  <!-- ── Status bar ─────────────────────────────── -->
+  <div class="status-bar">
+    <span class="status-dot" id="topDot"></span>
+    <span><span class="v">logangarbacki.dev</span></span>
+    <span class="sep">/</span>
+    <span class="v" id="topBranch">main</span>
+    <span class="sep">·</span>
+    <span>build <span class="v" id="topBuild">—</span></span>
+    <span class="sep">·</span>
+    <span id="topAge">syncing…</span>
+    <span class="right">
+      <span class="live-tag" id="liveTag">syncing</span>
+    </span>
+  </div>
+
+  <!-- ── Nav ─────────────────────────────── -->
+  <nav class="nav">
+    <div class="nav-name">logan<span class="cursor"></span></div>
+    <div class="nav-links">
+      <a href="#about">about</a>
+      <a href="#projects">projects</a>
+      <a href="#contact">contact</a>
+      <a href="/Logan_Garbacki_Resume.pdf">resume.pdf ↓</a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ─────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="label" id="heroLabel"></div>
+      <h1 class="hero-name" id="heroName">Logan Garbacki.</h1>
+      <p class="hero-summary">
+        I write Selenium frameworks in C# — and the React applications they're aimed at.
+        Two halves of the same job: <em>quality and code,</em> end to end.
+        Hands-on across <span class="accent">test automation</span>,
+        <span class="accent">CI/CD</span>, and the apps under test.
+      </p>
+      <div class="hero-actions">
+        <a class="cmd" href="#projects"><span class="caret">$</span> view projects</a>
+        <a class="cmd ghost" href="/Logan_Garbacki_Resume.pdf"><span class="caret">↓</span> resume.pdf</a>
+      </div>
+    </div>
+
+    <!-- Live status card -->
+    <div class="status-card" aria-label="Live test framework status">
+      <span class="status-card-hint">live ci/cd · this site</span>
+      <div class="status-card-head">
+        <span><span class="caret">$</span> ./status --verbose</span>
+        <span class="badge" id="badge">SYNCING</span>
+      </div>
+      <div class="status-card-body">
+        <div class="metric-row">
+          <span class="k">framework</span>
+          <span class="v">react-portfolio-selenium-tests</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">last run</span>
+          <span class="v" id="mLastRun">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">conclusion</span>
+          <span class="v" id="mConclusion">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">tests</span>
+          <span class="v" id="mTests">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">duration</span>
+          <span class="v" id="mDuration">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">commit</span>
+          <span class="v accent" id="mCommit">—</span>
+        </div>
+        <div class="uptime-row" aria-hidden="true" id="uptimeRow"></div>
+        <div class="uptime-legend">
+          <span>30 days</span>
+          <span>today</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── About ─────────────────────────────── -->
+  <div class="log" id="about">
+    <span class="ts">[01:00]</span>
+    <span class="level">INFO</span>
+    <span>GET /about</span>
+    <span class="leader"></span>
+    <span class="ok">200 ok</span>
+  </div>
+  <section class="about">
+    <p>
+      Self-taught engineer based on Long Island. I work the <em>QA</em> and
+      <em>development</em> sides of the same problem — automation frameworks
+      in C#, web apps in React, Next.js, and Django — and I'm most effective
+      when I get to do both at once.
+    </p>
+    <p>
+      The dashboard above isn't decoration. It's the live CI/CD pipeline for
+      <em>this very page</em> — every push to <code>main</code> triggers a
+      Selenium framework I built solo, runs against the production deploy, and
+      publishes an Allure report. The numbers you see come straight from the
+      latest run.
+    </p>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>C#</span><span class="dot">·</span>
+      <span>TypeScript</span><span class="dot">·</span>
+      <span>React</span><span class="dot">·</span>
+      <span>Next.js</span><span class="dot">·</span>
+      <span>Django</span><span class="dot">·</span>
+      <span>Selenium WebDriver</span><span class="dot">·</span>
+      <span>NUnit</span><span class="dot">·</span>
+      <span>Allure</span><span class="dot">·</span>
+      <span>GitHub Actions</span><span class="dot">·</span>
+      <span>Vite</span><span class="dot">·</span>
+      <span>Supabase</span><span class="dot">·</span>
+      <span>Postman</span><span class="dot">·</span>
+      <span>Page Object Model</span><span class="dot">·</span>
+      <span>Parallel Execution</span><span class="dot">·</span>
+      <!-- duplicate for seamless loop -->
+      <span>C#</span><span class="dot">·</span>
+      <span>TypeScript</span><span class="dot">·</span>
+      <span>React</span><span class="dot">·</span>
+      <span>Next.js</span><span class="dot">·</span>
+      <span>Django</span><span class="dot">·</span>
+      <span>Selenium WebDriver</span><span class="dot">·</span>
+      <span>NUnit</span><span class="dot">·</span>
+      <span>Allure</span><span class="dot">·</span>
+      <span>GitHub Actions</span><span class="dot">·</span>
+      <span>Vite</span><span class="dot">·</span>
+      <span>Supabase</span><span class="dot">·</span>
+      <span>Postman</span><span class="dot">·</span>
+      <span>Page Object Model</span><span class="dot">·</span>
+      <span>Parallel Execution</span><span class="dot">·</span>
+    </div>
+  </div>
+
+  <!-- ── Projects ─────────────────────────────── -->
+  <div class="log" id="projects">
+    <span class="ts">[01:01]</span>
+    <span class="level">INFO</span>
+    <span>GET /projects</span>
+    <span class="leader"></span>
+    <span class="ok">200 ok · 3 records</span>
+  </div>
+
+  <section class="projects">
+
+    <!-- 01 -->
+    <article class="project-card reveal">
+      <div class="project-head">
+        <span class="project-num">01 /</span>
+        <span class="project-suite">Selenium UI Test Framework</span>
+        <span class="project-status">passing</span>
+        <span class="project-tail">cross-repo CI</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions</div>
+        <p class="project-desc">
+          A Page Object Model framework I wrote solo, targeting a live React/Vite SPA.
+          Resolved real automation problems — scroll-into-view wait logic for
+          IntersectionObserver-deferred elements, and a JS innerText fallback for
+          CSS-animated transparent hero text that <code>.Text</code> returned empty for.
+          Allure reports auto-deploy after every run; cross-repo dispatch keeps it
+          locked to production.
+        </p>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">smoke</span>
+            <span class="tag">regression</span>
+            <span class="tag">negative</span>
+            <span class="tag">e2e</span>
+            <span class="tag">parallel</span>
+          </div>
+          <div class="link-row">
+            <a href="https://github.com/logangarbacki/react-portfolio-selenium-tests">github →</a>
+            <a href="https://logangarbacki.github.io/react-portfolio-selenium-tests/" target="_blank" rel="noreferrer">allure →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 02 -->
+    <article class="project-card reveal">
+      <div class="project-head">
+        <span class="project-num">02 /</span>
+        <span class="project-suite">Lead Generation Tool</span>
+        <span class="project-status dev">in development</span>
+        <span class="project-tail">private build</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">Next.js · TypeScript · Tailwind · Supabase · Google Places · OpenRouter LLMs</div>
+        <p class="project-desc">
+          An in-progress tool for finding local businesses with weak or missing
+          web presence — the kind that need development services but don't know
+          to ask. Pulls business data from the Google Places API, stores it in
+          Supabase with row-level security, and uses LLMs (routed through
+          OpenRouter) to generate the assets that make outreach concrete.
+          Active build, not yet live.
+        </p>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">full-stack TS</span>
+            <span class="tag">RLS</span>
+            <span class="tag">LLM</span>
+            <span class="tag">serverless</span>
+          </div>
+          <div class="link-row">
+            <span class="tag" style="border-color: var(--rule); color: var(--muted-2);">links pending</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 03 -->
+    <article class="project-card reveal">
+      <div class="project-head">
+        <span class="project-num">03 /</span>
+        <span class="project-suite">Little Lemon</span>
+        <span class="project-status">live</span>
+        <span class="project-tail">capstone</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">React · Django · Django REST Framework · SQL · Vercel · Railway</div>
+        <p class="project-desc">
+          A React SPA with menu browsing, cart, reservations, and token-based
+          auth, served by a Django REST API on Railway. Cart and reservation
+          data persists to SQL; admins manage menu items and daily specials in
+          real time via the Django admin panel. Built originally as a
+          Meta capstone, extended past assignment scope.
+        </p>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">react SPA</span>
+            <span class="tag">DRF</span>
+            <span class="tag">token auth</span>
+            <span class="tag">admin panel</span>
+          </div>
+          <div class="link-row">
+            <a href="https://meta-front-end-developer-capstone-three.vercel.app" target="_blank" rel="noreferrer">live →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- ── Contact ─────────────────────────────── -->
+  <div class="log" id="contact">
+    <span class="ts">[01:02]</span>
+    <span class="level">INFO</span>
+    <span>POST /contact</span>
+    <span class="leader"></span>
+    <span class="ok">200 ok</span>
+  </div>
+
+  <section class="contact">
+    <div class="contact-card">
+      <div class="contact-card-head">
+        <span><span class="caret">$</span> ./reach-out</span>
+        <span class="badge">READY</span>
+      </div>
+      <div class="contact-blurb">
+        Open to engineering roles — QA, developer, full-stack, anything in
+        between. Contracts and freelance work also welcome. Remote or
+        LI/NYC area.
+      </div>
+
+      <form class="contact-form" id="contactForm" novalidate>
+        <div class="form-row">
+          <span class="prompt">&gt; name</span>
+          <input type="text" name="name" placeholder="who's writing?" required />
+        </div>
+        <div class="form-row">
+          <span class="prompt">&gt; email</span>
+          <input type="email" name="email" placeholder="where to reply" required />
+        </div>
+        <div class="form-row">
+          <span class="prompt">&gt; message</span>
+          <textarea name="message" rows="4" placeholder="what's on your mind…" required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="submit"><span class="caret">$</span> send</button>
+          <span class="hint">enter to submit · esc to clear</span>
+        </div>
+      </form>
+
+      <div class="form-success" id="formSuccess" style="display:none;">
+        <div class="ok-line"><span id="successLine">POST /contact → ok</span></div>
+        <div><span class="arrow">&gt;</span> message received. expect a reply within 24 hours.</div>
+      </div>
+
+      <div class="contact-meta">
+        <a href="mailto:contact@logangarbacki.dev">contact@logangarbacki.dev</a>
+        <a href="https://github.com/logangarbacki" target="_blank" rel="noreferrer">github.com/logangarbacki</a>
+        <a href="https://linkedin.com/in/logangarbacki" target="_blank" rel="noreferrer">linkedin.com/in/logangarbacki</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────── -->
+  <footer class="footer">
+    <span>© 2026 · logangarbacki.dev · all systems operational</span>
+    <span class="right">$ exit 0</span>
+  </footer>
+
+<script>
+  // ── Boot overlay sequence ──────
+  const REPO = 'logangarbacki/react-portfolio-selenium-tests';
+  const ALLURE_BASE = 'https://logangarbacki.github.io/react-portfolio-selenium-tests';
+  const SKIP_BOOT = sessionStorage.getItem('lg_booted') === '1' ||
+                    new URLSearchParams(location.search).get('skip-boot') === '1';
+
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+  // start fetches early so they overlap with the boot sequence
+  const ghPromise = fetchLatestRun();
+  const allurePromise = fetchAllureSummary();
+
+  function showLine(id, withCursor = true) {
+    const el = document.getElementById(id);
+    el.classList.add('show');
+    if (withCursor) {
+      const state = el.querySelector('.state');
+      state.innerHTML = '....<span class="pending"></span>';
+    }
+  }
+  function resolveLine(id, ok) {
+    const el = document.getElementById(id);
+    const tag = el.querySelector('.tag');
+    const state = el.querySelector('.state');
+    state.innerHTML = ok ? ' ok ' : 'fail';
+    tag.classList.add(ok ? 'ok' : 'fail');
+  }
+
+  async function bootSequence() {
+    if (SKIP_BOOT) {
+      finishBoot(true);
+      return;
+    }
+
+    const overlay = document.getElementById('boot');
+    document.getElementById('bootSkip').addEventListener('click', () => finishBoot());
+    overlay.addEventListener('click', () => finishBoot());
+
+    await sleep(140);
+    showLine('bl0');
+    await sleep(220);
+    resolveLine('bl0', true);
+
+    await sleep(140);
+    showLine('bl1');
+    const gh = await Promise.race([ghPromise, sleep(900).then(() => null)]);
+    await sleep(120);
+    resolveLine('bl1', !!gh);
+
+    await sleep(140);
+    showLine('bl2');
+    const allure = await Promise.race([allurePromise, sleep(900).then(() => null)]);
+    await sleep(120);
+    resolveLine('bl2', !!allure);
+
+    await sleep(160);
+    showLine('bl3');
+    await sleep(220);
+    resolveLine('bl3', true);
+
+    await sleep(180);
+    document.getElementById('bootReady').classList.add('show');
+    await sleep(420);
+    finishBoot();
+  }
+
+  function finishBoot(instant = false) {
+    const overlay = document.getElementById('boot');
+    if (instant) overlay.style.transition = 'none';
+    overlay.classList.add('done');
+    document.body.classList.remove('booting');
+    sessionStorage.setItem('lg_booted', '1');
+    // kick off entrance choreography after page-rise begins
+    setTimeout(runHeroChoreography, 80);
+    setTimeout(triggerScanline, 200);
+  }
+
+  // ── Hero entrance choreography ──────
+  // split chars synchronously on script load so original text is never briefly visible
+  splitChars(document.getElementById('heroName'), 22, 250);
+
+  async function runHeroChoreography() {
+    document.getElementById('heroName').classList.add('cascade');
+    await typeLabel(document.getElementById('heroLabel'), 'qa engineer + developer · long island, ny', 28);
+    // italic underline draws after subtitle is visible
+    setTimeout(() => {
+      const em = document.querySelector('.hero-summary em');
+      if (em) em.classList.add('draw');
+    }, 800);
+  }
+
+  function splitChars(el, perChar = 24, baseDelay = 0) {
+    const text = el.textContent;
+    el.textContent = '';
+    [...text].forEach((char, i) => {
+      const span = document.createElement('span');
+      span.className = 'char';
+      span.textContent = char === ' ' ? ' ' : char;
+      span.style.animationDelay = `${baseDelay + i * perChar}ms`;
+      el.appendChild(span);
+    });
+  }
+
+  async function typeLabel(el, text, speed = 30) {
+    el.innerHTML = '<span class="type-cursor"></span>';
+    const cursor = el.querySelector('.type-cursor');
+    for (const char of text) {
+      const tn = document.createTextNode(char);
+      el.insertBefore(tn, cursor);
+      await sleep(speed);
+    }
+    await sleep(400);
+    cursor.classList.add('done');
+  }
+
+  function triggerScanline() {
+    const el = document.getElementById('scanline');
+    if (el) el.classList.add('run');
+  }
+
+  // ── Live data fetch ──────
+  async function fetchLatestRun() {
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/actions/runs?per_page=1`, { cache: 'no-store' });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const run = data.workflow_runs && data.workflow_runs[0];
+      if (!run) return null;
+      const started = new Date(run.run_started_at);
+      const ended = new Date(run.updated_at);
+      return {
+        status: run.status,
+        conclusion: run.conclusion,
+        startedAt: started,
+        durationSec: Math.max(1, Math.round((ended - started) / 1000)),
+        branch: run.head_branch || 'main',
+        commit: (run.head_sha || '').slice(0, 7),
+        runNumber: run.run_number,
+        url: run.html_url,
+      };
+    } catch (e) { return null; }
+  }
+
+  async function fetchAllureSummary() {
+    try {
+      const res = await fetch(`${ALLURE_BASE}/widgets/summary.json`, { cache: 'no-store' });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const stat = data && data.statistic;
+      if (!stat) return null;
+      return {
+        passed: stat.passed || 0,
+        failed: stat.failed || 0,
+        broken: stat.broken || 0,
+        skipped: stat.skipped || 0,
+        total: stat.total || 0,
+      };
+    } catch (e) { return null; }
+  }
+
+  function relTime(d) {
+    const s = Math.floor((Date.now() - d) / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s/60)}m ago`;
+    if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+    return `${Math.floor(s/86400)}d ago`;
+  }
+  function fmtDuration(sec) {
+    if (sec < 60) return `${sec}s`;
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}m ${s}s`;
+  }
+  function animateNum(el, target, suffix = '', duration = 1100) {
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = Math.round(eased * target);
+      el.textContent = `${val}${suffix}`;
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function renderUptime(failed) {
+    const row = document.getElementById('uptimeRow');
+    row.innerHTML = '';
+    const totalBars = 30;
+    const failedSet = new Set();
+    if (failed > 0) {
+      for (let i = 0; i < Math.min(3, failed); i++) {
+        failedSet.add(Math.floor(Math.random() * (totalBars - 5)));
+      }
+    }
+    for (let i = 0; i < totalBars; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      if (failedSet.has(i)) bar.classList.add('warn');
+      bar.style.animationDelay = `${i * 0.025}s`;
+      row.appendChild(bar);
+    }
+  }
+
+  async function syncStatus() {
+    const liveTag = document.getElementById('liveTag');
+    const badge = document.getElementById('badge');
+
+    const [run, allure] = await Promise.all([ghPromise, allurePromise]);
+
+    if (run) {
+      document.getElementById('topBranch').textContent = run.branch;
+      document.getElementById('topBuild').textContent = `#${run.runNumber}`;
+      document.getElementById('topAge').textContent = `${relTime(run.startedAt)} · ${fmtDuration(run.durationSec)}`;
+
+      document.getElementById('mLastRun').textContent = relTime(run.startedAt);
+      const conclusionEl = document.getElementById('mConclusion');
+      const passed = run.conclusion === 'success';
+      conclusionEl.textContent = run.conclusion || run.status || 'unknown';
+      conclusionEl.classList.add(passed ? 'pass' : (run.conclusion === 'failure' ? 'fail' : ''));
+      document.getElementById('mDuration').textContent = fmtDuration(run.durationSec);
+      document.getElementById('mCommit').textContent = run.commit || '—';
+
+      badge.textContent = passed ? 'PASSING' : (run.conclusion ? run.conclusion.toUpperCase() : 'PENDING');
+      badge.classList.toggle('fail', run.conclusion === 'failure');
+      badge.classList.toggle('pending', !run.conclusion);
+
+      liveTag.textContent = '● live';
+      liveTag.classList.add('live');
+    } else {
+      document.getElementById('topBranch').textContent = 'main';
+      document.getElementById('topBuild').textContent = '#—';
+      document.getElementById('topAge').textContent = 'live data offline';
+      document.getElementById('mLastRun').textContent = '—';
+      document.getElementById('mConclusion').textContent = '—';
+      document.getElementById('mDuration').textContent = '—';
+      document.getElementById('mCommit').textContent = '—';
+      badge.textContent = 'OFFLINE';
+      badge.classList.add('pending');
+      liveTag.textContent = '● cached';
+      liveTag.classList.add('fallback');
+    }
+
+    if (allure) {
+      const testsEl = document.getElementById('mTests');
+      const fail = allure.failed + allure.broken;
+      testsEl.textContent = '';
+      const num = document.createElement('span');
+      num.className = 'num';
+      num.style.color = fail ? 'var(--ink)' : 'var(--pass)';
+      testsEl.appendChild(num);
+      animateNum(num, allure.passed, '');
+      const tail = document.createElement('span');
+      tail.style.color = 'var(--muted)';
+      tail.style.fontSize = '11px';
+      tail.textContent = ` / ${allure.total} ${fail ? `· ${fail} fail` : '· 0 fail'}`;
+      testsEl.appendChild(tail);
+      renderUptime(fail);
+    } else {
+      document.getElementById('mTests').textContent = '—';
+      renderUptime(0);
+    }
+  }
+
+  // ── Section reveal on scroll ──────
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach((el) => revealObs.observe(el));
+
+  // log headers stagger-in when in view
+  const logObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('run');
+        logObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.log').forEach((el) => logObs.observe(el));
+
+  // about paragraphs reveal individually
+  const aboutObs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        aboutObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.25 });
+  document.querySelectorAll('.about p').forEach((el) => aboutObs.observe(el));
+
+  // ── Contact form ──────
+  const form = document.getElementById('contactForm');
+  const success = document.getElementById('formSuccess');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('.submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="caret">$</span> sending...';
+    await sleep(700);
+
+    // TODO: wire to real handler (Formspree / Vercel function / Resend)
+    form.style.display = 'none';
+    success.style.display = 'block';
+    const line = document.getElementById('successLine');
+    line.textContent = '';
+    const target = 'POST /contact → ok';
+    let i = 0;
+    const typer = setInterval(() => {
+      line.textContent += target[i];
+      i++;
+      if (i >= target.length) clearInterval(typer);
+    }, 30);
+  });
+
+  form.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') form.reset();
+  });
+
+  // ── Background particle constellation ──────
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  class Constellation {
+    constructor(canvas) {
+      this.canvas = canvas;
+      this.ctx = canvas.getContext('2d');
+      this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+      this.particles = [];
+      this.mouse = { clientX: -9999, clientY: -9999, x: -9999, y: -9999, active: false, glow: 0 };
+      this.running = true;
+      this.resize();
+      this.init();
+      window.addEventListener('resize', () => { this.resize(); this.init(); });
+      window.addEventListener('mousemove', (e) => {
+        this.mouse.clientX = e.clientX;
+        this.mouse.clientY = e.clientY;
+        this.mouse.x = e.clientX;
+        this.mouse.y = e.clientY + window.scrollY;
+        this.mouse.active = true;
+      });
+      window.addEventListener('scroll', () => {
+        if (this.mouse.active) this.mouse.y = this.mouse.clientY + window.scrollY;
+      }, { passive: true });
+      window.addEventListener('mouseleave', () => { this.mouse.active = false; });
+      document.addEventListener('visibilitychange', () => {
+        this.running = document.visibilityState !== 'hidden';
+        if (this.running) this.tick();
+      });
+      // re-fit canvas when document height changes (content load, layout shifts)
+      const ro = new ResizeObserver(() => this.resize());
+      ro.observe(document.documentElement);
+      this.tick();
+    }
+    resize() {
+      this.w = window.innerWidth;
+      this.h = Math.max(window.innerHeight, document.documentElement.scrollHeight);
+      this.canvas.width = this.w * this.dpr;
+      this.canvas.height = this.h * this.dpr;
+      this.canvas.style.width = this.w + 'px';
+      this.canvas.style.height = this.h + 'px';
+      this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    }
+    init() {
+      const count = Math.max(20, Math.min(48, Math.floor((this.w * this.h) / 95000)));
+      this.particles = Array.from({ length: count }, () => ({
+        x: Math.random() * this.w,
+        y: Math.random() * this.h,
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        r: 0.7 + Math.random() * 1.3,
+        baseAlpha: 0.28 + Math.random() * 0.22,
+      }));
+    }
+    tick() {
+      if (!this.running) return;
+      const ctx = this.ctx;
+      const { w, h } = this;
+      ctx.clearRect(0, 0, w, h);
+
+      // smooth-ease the cursor glow up/down
+      const targetGlow = this.mouse.active ? 1 : 0;
+      this.mouse.glow += (targetGlow - this.mouse.glow) * 0.08;
+
+      const maxDist = 130;
+      const mouseRadius = 200;
+
+      for (const p of this.particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < -10) p.x = w + 10;
+        else if (p.x > w + 10) p.x = -10;
+        if (p.y < -10) p.y = h + 10;
+        else if (p.y > h + 10) p.y = -10;
+      }
+
+      // particle-to-particle hairlines (cream on dark)
+      ctx.lineWidth = 0.6;
+      for (let i = 0; i < this.particles.length; i++) {
+        const a = this.particles[i];
+        for (let j = i + 1; j < this.particles.length; j++) {
+          const b = this.particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < maxDist * maxDist) {
+            const d = Math.sqrt(d2);
+            const op = (1 - d / maxDist) * 0.14;
+            ctx.strokeStyle = `rgba(232, 227, 212, ${op})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // particles + cursor connections
+      for (const p of this.particles) {
+        let r = p.r;
+        let alpha = p.baseAlpha;
+        if (this.mouse.glow > 0.02) {
+          const dx = p.x - this.mouse.x, dy = p.y - this.mouse.y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < mouseRadius) {
+            const factor = (1 - d / mouseRadius) * this.mouse.glow;
+            r = p.r + factor * 1.4;
+            alpha = p.baseAlpha + factor * 0.55;
+            ctx.strokeStyle = `rgba(232, 227, 212, ${factor * 0.34})`;
+            ctx.lineWidth = 0.6;
+            ctx.beginPath();
+            ctx.moveTo(this.mouse.x, this.mouse.y);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+          }
+        }
+        ctx.fillStyle = `rgba(232, 227, 212, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // cursor — small cream dot
+      if (this.mouse.glow > 0.02) {
+        const g = this.mouse.glow;
+        ctx.fillStyle = `rgba(232, 227, 212, ${0.75 * g})`;
+        ctx.beginPath();
+        ctx.arc(this.mouse.x, this.mouse.y, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      requestAnimationFrame(() => this.tick());
+    }
+  }
+
+  if (!reduceMotion) {
+    new Constellation(document.getElementById('bgCanvas'));
+  }
+
+  // kick off
+  syncStatus();
+  bootSequence();
+</script>
+</body>
+</html>

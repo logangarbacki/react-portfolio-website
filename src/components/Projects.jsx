@@ -1,93 +1,142 @@
-import React, { useState } from 'react'
-import useReveal from '../hooks/useReveal.js'
-import './Projects.css'
+import { useEffect, useRef } from 'react';
+import './Projects.css';
+import SectionLog from './SectionLog';
 
-const projects = [
+const PROJECTS = [
   {
     num: '01',
-    title: 'Selenium Regression Framework',
-    type: 'Professional · QA Automation',
-    year: '2023',
-    description: 'Architected a Selenium-based regression framework in C# at PrintScan, cutting manual testing effort by 40%+ per sprint. Includes custom appointment-workflow automation tools.',
-    tags: ['Selenium', 'C#', '.NET', 'QA Automation'],
-    color: '#00e5ff',
-    metric: '40% ↓ manual testing',
+    suite: 'Selenium UI Test Framework',
+    status: 'passing',
+    statusKind: 'pass',
+    tail: 'cross-repo CI',
+    stack: 'C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions',
+    desc: (
+      <>
+        A Page Object Model framework I wrote solo, targeting a live React/Vite SPA.
+        Resolved real automation problems — scroll-into-view wait logic for
+        IntersectionObserver-deferred elements, and a JS innerText fallback for
+        CSS-animated transparent hero text that <code>.Text</code> returned empty for.
+        Allure reports auto-deploy after every run; cross-repo dispatch keeps it
+        locked to production.
+      </>
+    ),
+    tags: ['smoke', 'regression', 'negative', 'e2e', 'parallel'],
+    links: [
+      { href: 'https://github.com/logangarbacki/react-portfolio-selenium-tests', label: 'github →', testid: 'project-1-github' },
+      { href: 'https://logangarbacki.github.io/react-portfolio-selenium-tests/', label: 'allure →', testid: 'project-1-allure' },
+    ],
   },
   {
     num: '02',
-    title: 'DB-Driven Location Search',
-    type: 'Professional · Full-Stack',
-    year: '2023',
-    description: 'Built a database-driven location search system in C# for PrintScan, dynamically generating pages for every location. Improved SEO and site navigation at scale.',
-    tags: ['C#', '.NET', 'SQL', 'SEO'],
-    color: '#ff6b35',
-    metric: 'SEO + nav improved',
+    suite: 'Lead Generation Tool',
+    status: 'in development',
+    statusKind: 'dev',
+    tail: 'private build',
+    stack: 'Next.js · TypeScript · Tailwind · Supabase · Google Places · OpenRouter LLMs',
+    desc: (
+      <>
+        An in-progress tool for finding local businesses with weak or missing
+        web presence — the kind that need development services but don't know
+        to ask. Pulls business data from the Google Places API, stores it in
+        Supabase with row-level security, and uses LLMs (routed through
+        OpenRouter) to generate the assets that make outreach concrete.
+        Active build, not yet live.
+      </>
+    ),
+    tags: ['full-stack TS', 'RLS', 'LLM', 'serverless'],
+    pendingLinks: true,
   },
   {
     num: '03',
-    title: 'logangarbacki.dev',
-    type: 'Personal · Front-End',
-    year: '2025',
-    description: 'This portfolio — built with Vite + React, featuring an animated canvas dot grid, custom cursor, scroll-reveal animations, and a full resume section. Fully responsive.',
-    tags: ['React', 'Vite', 'CSS', 'Canvas API'],
-    color: '#00ff88',
-    metric: 'Shipped & live',
+    suite: 'Little Lemon',
+    status: 'live',
+    statusKind: 'pass',
+    tail: 'capstone',
+    stack: 'React · Django · Django REST Framework · SQL · Vercel · Railway',
+    desc: (
+      <>
+        A React SPA with menu browsing, cart, reservations, and token-based
+        auth, served by a Django REST API on Railway. Cart and reservation
+        data persists to SQL; admins manage menu items and daily specials in
+        real time via the Django admin panel. Built originally as a Meta
+        capstone, extended past assignment scope.
+      </>
+    ),
+    tags: ['react SPA', 'DRF', 'token auth', 'admin panel'],
+    links: [
+      { href: 'https://meta-front-end-developer-capstone-three.vercel.app', label: 'live →', testid: 'project-3-live' },
+    ],
   },
-]
+];
 
-function ProjectItem({ p, i, hovered, setHovered }) {
-  return (
-    <div
-      className={`project-item ${hovered === i ? 'hovered' : ''}`}
-      style={{ '--project-color': p.color }}
-      onMouseEnter={() => setHovered(i)}
-      onMouseLeave={() => setHovered(null)}
-    >
-      <div className="project-bar" style={{ background: p.color }}></div>
-      <div className="project-num">{p.num}</div>
-      <div className="project-body">
-        <div className="project-header">
-          <h3 className="project-title">{p.title}</h3>
-          <span className="project-year">{p.year}</span>
-        </div>
-        <div className="project-type">{p.type}</div>
-        <p className="project-desc">{p.description}</p>
-        <div className="project-footer">
-          <div className="project-tags">
-            {p.tags.map(t => <span className="tag" key={t}>{t}</span>)}
-          </div>
-          <div className="project-metric">{p.metric}</div>
-        </div>
-      </div>
-    </div>
-  )
+function useReveal() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const cards = el.querySelectorAll('.project-card');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    cards.forEach((c) => obs.observe(c));
+    return () => obs.disconnect();
+  }, []);
+  return ref;
 }
 
 export default function Projects() {
-  useReveal()
-  const [hovered, setHovered] = useState(null)
-
+  const ref = useReveal();
   return (
-    <section className="projects" id="projects">
-      <div className="projects-label reveal">
-        <span className="section-num">02</span>
-        <span className="section-slash">/</span>
-        <span>projects</span>
-      </div>
-      <h2 className="projects-heading reveal">
-        Selected <span className="heading-accent">work.</span>
-      </h2>
-      <div className="projects-list reveal">
-        {projects.map((p, i) => (
-          <ProjectItem
+    <>
+      <SectionLog id="projects" ts="[01:01]" path="/projects">{`${PROJECTS.length} records`}</SectionLog>
+      <section ref={ref} className="projects" data-testid="projects">
+        {PROJECTS.map((p, i) => (
+          <article
             key={p.num}
-            p={p}
-            i={i}
-            hovered={hovered}
-            setHovered={setHovered}
-          />
+            className="project-card reveal"
+            data-testid={`project-card-${i + 1}`}
+          >
+            <div className="project-head">
+              <span className="project-num">{p.num} /</span>
+              <span className="project-suite" data-testid={`project-${i + 1}-title`}>{p.suite}</span>
+              <span
+                className={`project-status ${p.statusKind === 'dev' ? 'dev' : ''}`}
+                data-testid={`project-${i + 1}-status`}
+              >
+                {p.status}
+              </span>
+              <span className="project-tail">{p.tail}</span>
+            </div>
+            <div className="project-body">
+              <div className="project-stack">{p.stack}</div>
+              <p className="project-desc">{p.desc}</p>
+              <div className="project-foot">
+                <div className="tag-row">
+                  {p.tags.map((t) => (
+                    <span className="tag" key={t}>{t}</span>
+                  ))}
+                </div>
+                <div className="link-row">
+                  {p.pendingLinks ? (
+                    <span className="tag tag-pending">links pending</span>
+                  ) : (
+                    p.links.map((l) => (
+                      <a key={l.label} href={l.href} target="_blank" rel="noreferrer" data-testid={l.testid}>
+                        {l.label}
+                      </a>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </article>
         ))}
-      </div>
-    </section>
-  )
+      </section>
+    </>
+  );
 }

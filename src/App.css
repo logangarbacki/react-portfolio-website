@@ -1,4 +1,40 @@
-.App {
+.app-root {
+  position: relative;
   min-height: 100vh;
-  background: var(--bg);
+}
+
+/* one-shot scanline post-boot */
+.scanline {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 80px;
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(95, 211, 136, 0.04) 30%,
+    rgba(95, 211, 136, 0.16) 50%,
+    rgba(95, 211, 136, 0.04) 70%,
+    transparent 100%);
+  z-index: 9998;
+  pointer-events: none;
+  transform: translateY(-80px);
+  opacity: 0;
+}
+.scanline.run {
+  animation: scan 1.4s cubic-bezier(0.5, 0, 0.5, 1) 1 forwards;
+}
+@keyframes scan {
+  0%   { transform: translateY(-80px); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(110vh); opacity: 0; }
+}
+
+/* particle canvas — anchored to document, scrolls with page */
+.bg-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: -1;
 }

@@ -1,36 +1,17 @@
-import React, { useState, useEffect } from 'react';
 import './Navbar.css';
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <a href="#home" className="nav-logo">
-        <span className="logo-bracket">[</span>
-        LG
-        <span className="logo-bracket">]</span>
-      </a>
-      <ul className={`nav-links ${menuOpen ? 'open' : ''}`}>
-        {['about','projects','skills','resume','contact'].map(s => (
-          <li key={s}>
-            <a href={`#${s}`} onClick={() => setMenuOpen(false)}>
-              <span className="nav-num">//</span> {s}
-            </a>
-          </li>
-        ))}
-      </ul>
-      <button className="nav-status" aria-label="Status">
-        <span className="status-dot"></span>
-        available
-      </button>
+    <nav className="nav" data-testid="nav">
+      <div className="nav-name" data-testid="nav-name">
+        logan<span className="nav-cursor" />
+      </div>
+      <div className="nav-links" data-testid="nav-links">
+        <a href="#about" data-testid="nav-link-about">about</a>
+        <a href="#projects" data-testid="nav-link-projects">projects</a>
+        <a href="#contact" data-testid="nav-link-contact">contact</a>
+        <a href="/Logan_Garbacki_Resume.pdf" data-testid="nav-link-resume">resume.pdf ↓</a>
+      </div>
     </nav>
   );
 }

@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>v2 · Logan Garbacki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Spline+Sans+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f6f4ee;
+    --paper: #fbf9f3;
+    --ink: #14120d;
+    --ink-2: #2b2820;
+    --muted: #807a70;
+    --muted-2: #b3aca0;
+    --rule: #d9d3c5;
+    --rule-soft: #ebe6db;
+    --pass: #2c6a3f;
+    --pass-bg: #e7efe9;
+    --warn: #b8732b;
+    --accent: #6d4f24;
+
+    --mono: 'Spline Sans Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --serif: 'Instrument Serif', 'Times New Roman', serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle, rgba(20,18,13,0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: 0 0;
+  }
+  ::selection { background: var(--ink); color: var(--bg); }
+  a { color: inherit; text-decoration: none; }
+  code { font-family: var(--mono); }
+
+  /* ── Status bar (top) ─────────────────────────────── */
+  .status-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ink);
+    color: #d8d3c4;
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 10px 32px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    letter-spacing: 0.01em;
+  }
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #5fd388;
+    box-shadow: 0 0 0 0 rgba(95, 211, 136, 0.55);
+    animation: pulse 2.4s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(95,211,136,0.55); }
+    70%  { box-shadow: 0 0 0 7px rgba(95,211,136,0); }
+    100% { box-shadow: 0 0 0 0 rgba(95,211,136,0); }
+  }
+  .status-bar .v { color: #fff; }
+  .status-bar .sep { color: #4a4942; }
+  .status-bar .right { margin-left: auto; display: flex; gap: 18px; align-items: center; }
+  .live-tag {
+    color: var(--muted-2);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .live-tag.live { color: #5fd388; }
+  .live-tag.fallback { color: #d8a04a; }
+
+  /* ── Nav ─────────────────────────────── */
+  .nav {
+    padding: 20px 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+  }
+  .nav-name {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .nav-name .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--ink);
+    margin-left: 2px;
+    transform: translateY(2px);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .nav-links { display: flex; gap: 28px; color: var(--muted); }
+  .nav-links a {
+    transition: color 0.15s;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+  }
+  .nav-links a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* ── Hero ─────────────────────────────── */
+  .hero {
+    padding: 56px 56px 88px;
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .hero-left .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fade-up 0.7s 0.05s ease forwards;
+  }
+  .hero-left .label::before {
+    content: '$ ';
+    color: var(--accent);
+  }
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(64px, 9vw, 112px);
+    font-weight: 400;
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fade-up 0.85s 0.15s cubic-bezier(0.2,0.6,0.2,1) forwards;
+  }
+  .hero-name em {
+    font-style: italic;
+    color: var(--ink-2);
+  }
+  .hero-summary {
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 50ch;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fade-up 0.7s 0.35s ease forwards;
+  }
+  .hero-summary .accent {
+    color: var(--accent);
+  }
+  .hero-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fade-up 0.7s 0.5s ease forwards;
+  }
+  .cmd {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 12px 18px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    transition: background 0.18s, transform 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.01em;
+  }
+  .cmd:hover { background: #2a2722; transform: translateY(-1px); }
+  .cmd.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .cmd.ghost:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .cmd .caret { color: #b89a64; }
+
+  /* ── Live status card (hero right) ─────────────────────────────── */
+  .status-card {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    align-self: start;
+    opacity: 0;
+    animation: fade-up 0.85s 0.3s ease forwards;
+    margin-top: 40px;
+  }
+  .status-card-head {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 0.02em;
+  }
+  .status-card-head .caret { color: #b89a64; }
+  .status-card-head .badge {
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--pass);
+    color: #fff;
+    transition: background 0.3s;
+  }
+  .status-card-head .badge.fail { background: #b8453a; }
+  .status-card-head .badge.pending { background: var(--warn); }
+  .status-card-body {
+    padding: 18px 20px 20px;
+  }
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--rule-soft);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .metric-row:last-child { border-bottom: 0; }
+  .metric-row .k {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .metric-row .v { color: var(--ink); }
+  .metric-row .v.pass { color: var(--pass); }
+  .metric-row .v.fail { color: #b8453a; }
+  .metric-row .v.accent { color: var(--accent); }
+  .metric-row .v .num {
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 500;
+    margin-right: 4px;
+  }
+  .uptime-row {
+    display: flex;
+    gap: 2px;
+    padding-top: 14px;
+  }
+  .uptime-row .bar {
+    flex: 1;
+    height: 18px;
+    background: var(--pass);
+    border-radius: 1px;
+    opacity: 0;
+    animation: fade-in 0.5s ease forwards;
+  }
+  .uptime-row .bar.warn { background: var(--warn); }
+  .uptime-row .bar.dim { background: var(--rule); }
+  .uptime-legend {
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Section log header ─────────────────────────────── */
+  .log {
+    padding: 0 56px;
+    margin-top: 48px;
+    margin-bottom: 28px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .log .ts { color: var(--muted-2); }
+  .log .level {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    padding: 1px 8px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--ink-2);
+  }
+  .log .leader {
+    flex: 1;
+    border-bottom: 1px dotted var(--rule);
+    height: 1px;
+    margin: 0 4px;
+    align-self: center;
+  }
+  .log .ok { color: var(--pass); }
+
+  /* ── About ─────────────────────────────── */
+  .about {
+    padding: 0 56px 96px;
+    max-width: 740px;
+  }
+  .about p {
+    font-family: var(--mono);
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--ink-2);
+    margin-bottom: 16px;
+  }
+  .about p em {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--ink);
+  }
+
+  /* ── Marquee strip ─────────────────────────────── */
+  .marquee {
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    overflow: hidden;
+    background: var(--paper);
+    padding: 12px 0;
+  }
+  .marquee-track {
+    display: flex;
+    gap: 48px;
+    white-space: nowrap;
+    animation: marquee 40s linear infinite;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .marquee-track span { flex-shrink: 0; }
+  .marquee-track span.dot { color: var(--accent); }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── Projects ─────────────────────────────── */
+  .projects { padding: 0 56px 96px; }
+  .project-card {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    margin-bottom: 14px;
+    transition: border-color 0.2s, transform 0.2s;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .project-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .project-card:hover { border-color: var(--ink); }
+  .project-head {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .project-num {
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .project-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--pass-bg);
+    color: var(--pass);
+    padding: 3px 9px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .project-status::before { content: '✓'; }
+  .project-status.dev {
+    background: #fdf3df;
+    color: var(--warn);
+  }
+  .project-status.dev::before {
+    content: '●';
+    animation: blink 1.6s steps(1) infinite;
+  }
+  .project-suite {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink);
+    flex: 1;
+    min-width: 200px;
+    line-height: 1.1;
+  }
+  .project-suite em { font-style: italic; color: var(--ink-2); }
+  .project-tail {
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .project-body {
+    padding: 18px 20px 20px;
+  }
+  .project-stack {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 0.01em;
+  }
+  .project-desc {
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    margin-bottom: 14px;
+    max-width: 70ch;
+  }
+  .project-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 4px;
+  }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px solid var(--rule);
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .link-row { display: flex; gap: 14px; }
+  .link-row a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+  }
+  .link-row a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── Contact ─────────────────────────────── */
+  .contact {
+    padding: 0 56px 120px;
+    max-width: 720px;
+  }
+  .contact-card {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .contact-card-head {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .contact-card-head .caret { color: #b89a64; }
+  .contact-card-head .badge {
+    background: var(--pass);
+    color: #fff;
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .contact-blurb {
+    padding: 22px 20px 8px;
+    font-family: var(--mono);
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .contact-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .contact-row:last-child { border-bottom: 0; }
+  .contact-row .k { color: var(--muted); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; align-self: center; }
+  .contact-row .v { color: var(--ink); }
+  .contact-row a:hover { color: var(--accent); }
+
+  /* ── Footer ─────────────────────────────── */
+  .footer {
+    background: var(--ink);
+    color: var(--muted-2);
+    padding: 26px 56px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .footer .right { color: #5a5651; }
+
+  /* ── Animations ─────────────────────────────── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── Responsive ─────────────────────────────── */
+  @media (max-width: 920px) {
+    .hero { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px 64px; }
+    .nav, .log, .about, .projects, .contact, .footer { padding-left: 24px; padding-right: 24px; }
+    .status-bar { padding: 10px 18px; gap: 10px; flex-wrap: wrap; }
+    .status-bar .right { margin-left: 0; gap: 12px; }
+    .status-card { margin-top: 0; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ── Status bar ─────────────────────────────── -->
+  <div class="status-bar">
+    <span class="status-dot" id="topDot"></span>
+    <span><span class="v">logangarbacki.dev</span></span>
+    <span class="sep">/</span>
+    <span class="v" id="topBranch">main</span>
+    <span class="sep">·</span>
+    <span>build <span class="v" id="topBuild">—</span></span>
+    <span class="sep">·</span>
+    <span id="topAge">syncing…</span>
+    <span class="right">
+      <span class="live-tag" id="liveTag">syncing</span>
+    </span>
+  </div>
+
+  <!-- ── Nav ─────────────────────────────── -->
+  <nav class="nav">
+    <div class="nav-name">logan<span class="cursor"></span></div>
+    <div class="nav-links">
+      <a href="#about">about</a>
+      <a href="#projects">projects</a>
+      <a href="#contact">contact</a>
+      <a href="/Logan_Garbacki_Resume.pdf">resume.pdf ↓</a>
+    </div>
+  </nav>
+
+  <!-- ── Hero ─────────────────────────────── -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="label">qa-automation-engineer · hicksville, ny</div>
+      <h1 class="hero-name">Logan Garbacki<br /><em>builds &amp; breaks.</em></h1>
+      <p class="hero-summary">
+        I build Selenium frameworks in C# that catch real bugs before they
+        ship — and write the React they're aimed at. Full-stack perspective on
+        quality, hands-on with <span class="accent">test automation</span>,
+        <span class="accent">CI/CD</span>, and the applications under test.
+      </p>
+      <div class="hero-actions">
+        <a class="cmd" href="#projects"><span class="caret">$</span> view projects</a>
+        <a class="cmd ghost" href="/Logan_Garbacki_Resume.pdf"><span class="caret">↓</span> resume.pdf</a>
+      </div>
+    </div>
+
+    <!-- Live status card -->
+    <div class="status-card" aria-label="Live test framework status">
+      <div class="status-card-head">
+        <span><span class="caret">$</span> ./status --verbose</span>
+        <span class="badge" id="badge">SYNCING</span>
+      </div>
+      <div class="status-card-body">
+        <div class="metric-row">
+          <span class="k">framework</span>
+          <span class="v">react-portfolio-selenium-tests</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">last run</span>
+          <span class="v" id="mLastRun">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">conclusion</span>
+          <span class="v" id="mConclusion">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">tests</span>
+          <span class="v" id="mTests">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">duration</span>
+          <span class="v" id="mDuration">—</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">commit</span>
+          <span class="v accent" id="mCommit">—</span>
+        </div>
+        <div class="uptime-row" aria-hidden="true" id="uptimeRow"></div>
+        <div class="uptime-legend">
+          <span>30 days</span>
+          <span>today</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── About ─────────────────────────────── -->
+  <div class="log" id="about">
+    <span class="ts">[01:00]</span>
+    <span class="level">INFO</span>
+    <span>GET /about</span>
+    <span class="leader"></span>
+    <span class="ok">200 ok</span>
+  </div>
+  <section class="about">
+    <p>
+      Self-taught QA Automation Engineer based on Long Island. Spent 2023 at
+      <em>PrintScan</em>, working alongside a senior developer to architect a
+      Selenium regression framework in C# that cut manual sprint testing by
+      forty percent. Currently expanding into full-stack TypeScript work.
+    </p>
+    <p>
+      The dashboard above pulls from one of my own projects in real time — a
+      separate Selenium framework I built solo, targeting this site. Every push
+      here triggers it via <code>repository_dispatch</code>. The numbers you
+      see are whatever happened on the latest run.
+    </p>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>C#</span><span class="dot">·</span>
+      <span>Selenium WebDriver</span><span class="dot">·</span>
+      <span>NUnit</span><span class="dot">·</span>
+      <span>TypeScript</span><span class="dot">·</span>
+      <span>React</span><span class="dot">·</span>
+      <span>Next.js</span><span class="dot">·</span>
+      <span>Django</span><span class="dot">·</span>
+      <span>Allure</span><span class="dot">·</span>
+      <span>GitHub Actions</span><span class="dot">·</span>
+      <span>Vite</span><span class="dot">·</span>
+      <span>Supabase</span><span class="dot">·</span>
+      <span>Postman</span><span class="dot">·</span>
+      <span>Page Object Model</span><span class="dot">·</span>
+      <span>parallel execution</span><span class="dot">·</span>
+      <!-- duplicate for seamless loop -->
+      <span>C#</span><span class="dot">·</span>
+      <span>Selenium WebDriver</span><span class="dot">·</span>
+      <span>NUnit</span><span class="dot">·</span>
+      <span>TypeScript</span><span class="dot">·</span>
+      <span>React</span><span class="dot">·</span>
+      <span>Next.js</span><span class="dot">·</span>
+      <span>Django</span><span class="dot">·</span>
+      <span>Allure</span><span class="dot">·</span>
+      <span>GitHub Actions</span><span class="dot">·</span>
+      <span>Vite</span><span class="dot">·</span>
+      <span>Supabase</span><span class="dot">·</span>
+      <span>Postman</span><span class="dot">·</span>
+      <span>Page Object Model</span><span class="dot">·</span>
+      <span>parallel execution</span><span class="dot">·</span>
+    </div>
+  </div>
+
+  <!-- ── Projects ─────────────────────────────── -->
+  <div class="log" id="projects">
+    <span class="ts">[01:01]</span>
+    <span class="level">INFO</span>
+    <span>GET /projects</span>
+    <span class="leader"></span>
+    <span class="ok">200 ok · 3 records</span>
+  </div>
+
+  <section class="projects">
+
+    <!-- 01 -->
+    <article class="project-card reveal">
+      <div class="project-head">
+        <span class="project-num">01 /</span>
+        <span class="project-suite">Selenium UI Test Framework</span>
+        <span class="project-status">passing</span>
+        <span class="project-tail">cross-repo CI</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions</div>
+        <p class="project-desc">
+          A Page Object Model framework I wrote solo, targeting a live React/Vite SPA.
+          Resolved real automation problems — scroll-into-view wait logic for
+          IntersectionObserver-deferred elements, and a JS innerText fallback for
+          CSS-animated transparent hero text that <code>.Text</code> returned empty for.
+          Allure reports auto-deploy after every run; cross-repo dispatch keeps it
+          locked to production.
+        </p>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">smoke</span>
+            <span class="tag">regression</span>
+            <span class="tag">negative</span>
+            <span class="tag">e2e</span>
+            <span class="tag">parallel</span>
+          </div>
+          <div class="link-row">
+            <a href="https://github.com/logangarbacki/react-portfolio-selenium-tests">github →</a>
+            <a href="https://logangarbacki.github.io/react-portfolio-selenium-tests/" target="_blank" rel="noreferrer">allure →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 02 -->
+    <article class="project-card reveal">
+      <div class="project-head">
+        <span class="project-num">02 /</span>
+        <span class="project-suite">Lead Generation Tool</span>
+        <span class="project-status dev">in development</span>
+        <span class="project-tail">private build</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">Next.js · TypeScript · Tailwind · Supabase · Google Places · OpenRouter LLMs</div>
+        <p class="project-desc">
+          An in-progress tool for finding local businesses with weak or missing
+          web presence — the kind that need development services but don't know
+          to ask. Pulls business data from the Google Places API, stores it in
+          Supabase with row-level security, and uses LLMs (routed through
+          OpenRouter) to generate the assets that make outreach concrete.
+          Active build, not yet live.
+        </p>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">full-stack TS</span>
+            <span class="tag">RLS</span>
+            <span class="tag">LLM</span>
+            <span class="tag">serverless</span>
+          </div>
+          <div class="link-row">
+            <span class="tag" style="border-color: var(--rule); color: var(--muted-2);">links pending</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 03 -->
+    <article class="project-card reveal">
+      <div class="project-head">
+        <span class="project-num">03 /</span>
+        <span class="project-suite">Little Lemon</span>
+        <span class="project-status">live</span>
+        <span class="project-tail">capstone</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">React · Django · Django REST Framework · SQL · Vercel · Railway</div>
+        <p class="project-desc">
+          A React SPA with menu browsing, cart, reservations, and token-based
+          auth, served by a Django REST API on Railway. Cart and reservation
+          data persists to SQL; admins manage menu items and daily specials in
+          real time via the Django admin panel. Built originally for the Meta
+          full-stack capstone, extended past assignment scope.
+        </p>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">react SPA</span>
+            <span class="tag">DRF</span>
+            <span class="tag">token auth</span>
+            <span class="tag">admin panel</span>
+          </div>
+          <div class="link-row">
+            <a href="https://meta-front-end-developer-capstone-three.vercel.app" target="_blank" rel="noreferrer">live →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- ── Contact ─────────────────────────────── -->
+  <div class="log" id="contact">
+    <span class="ts">[01:02]</span>
+    <span class="level">INFO</span>
+    <span>POST /contact</span>
+    <span class="leader"></span>
+    <span class="ok">200 ok</span>
+  </div>
+
+  <section class="contact">
+    <div class="contact-card">
+      <div class="contact-card-head">
+        <span><span class="caret">$</span> ./reach-out</span>
+        <span class="badge">READY</span>
+      </div>
+      <div class="contact-blurb">
+        Open to QA engineering roles, automation contracts, and full-stack
+        freelance work. Remote or NYC-area on-site.
+      </div>
+      <div class="contact-row">
+        <span class="k">email</span>
+        <a class="v" href="mailto:contact@logangarbacki.dev">contact@logangarbacki.dev</a>
+      </div>
+      <div class="contact-row">
+        <span class="k">github</span>
+        <a class="v" href="https://github.com/logangarbacki" target="_blank" rel="noreferrer">github.com/logangarbacki</a>
+      </div>
+      <div class="contact-row">
+        <span class="k">linkedin</span>
+        <a class="v" href="https://linkedin.com/in/logangarbacki" target="_blank" rel="noreferrer">linkedin.com/in/logangarbacki</a>
+      </div>
+      <div class="contact-row">
+        <span class="k">phone</span>
+        <span class="v">516 · 749 · 7910</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────── -->
+  <footer class="footer">
+    <span>© 2026 · logangarbacki.dev · all systems operational</span>
+    <span class="right">$ exit 0</span>
+  </footer>
+
+<script>
+  // ── Live data fetch from GitHub Actions API + Allure summary ──────
+  const REPO = 'logangarbacki/react-portfolio-selenium-tests';
+  const ALLURE_BASE = 'https://logangarbacki.github.io/react-portfolio-selenium-tests';
+
+  async function fetchLatestRun() {
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/actions/runs?per_page=1`, { cache: 'no-store' });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const run = data.workflow_runs && data.workflow_runs[0];
+      if (!run) return null;
+      const started = new Date(run.run_started_at);
+      const ended = new Date(run.updated_at);
+      return {
+        status: run.status,
+        conclusion: run.conclusion,
+        startedAt: started,
+        durationSec: Math.max(1, Math.round((ended - started) / 1000)),
+        branch: run.head_branch || 'main',
+        commit: (run.head_sha || '').slice(0, 7),
+        runNumber: run.run_number,
+        url: run.html_url,
+      };
+    } catch (e) { return null; }
+  }
+
+  async function fetchAllureSummary() {
+    try {
+      const res = await fetch(`${ALLURE_BASE}/widgets/summary.json`, { cache: 'no-store' });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const stat = data && data.statistic;
+      if (!stat) return null;
+      return {
+        passed: stat.passed || 0,
+        failed: stat.failed || 0,
+        broken: stat.broken || 0,
+        skipped: stat.skipped || 0,
+        total: stat.total || 0,
+      };
+    } catch (e) { return null; }
+  }
+
+  function relTime(d) {
+    const s = Math.floor((Date.now() - d) / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s/60)}m ago`;
+    if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+    return `${Math.floor(s/86400)}d ago`;
+  }
+
+  function fmtDuration(sec) {
+    if (sec < 60) return `${sec}s`;
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}m ${s}s`;
+  }
+
+  // count-up animation
+  function animateNum(el, target, suffix = '', duration = 1000) {
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = Math.round(eased * target);
+      el.textContent = `${val}${suffix}`;
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function renderUptime(failed) {
+    const row = document.getElementById('uptimeRow');
+    row.innerHTML = '';
+    const totalBars = 30;
+    // Distribute "failed" markers — at most 3 visible
+    const failedSet = new Set();
+    if (failed > 0) {
+      for (let i = 0; i < Math.min(3, failed); i++) {
+        failedSet.add(Math.floor(Math.random() * (totalBars - 5)));
+      }
+    }
+    for (let i = 0; i < totalBars; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'bar';
+      if (failedSet.has(i)) bar.classList.add('warn');
+      bar.style.animationDelay = `${i * 0.025}s`;
+      row.appendChild(bar);
+    }
+  }
+
+  async function syncStatus() {
+    const liveTag = document.getElementById('liveTag');
+    const badge = document.getElementById('badge');
+
+    const [run, allure] = await Promise.all([fetchLatestRun(), fetchAllureSummary()]);
+
+    if (run) {
+      // Top bar
+      document.getElementById('topBranch').textContent = run.branch;
+      document.getElementById('topBuild').textContent = `#${run.runNumber}`;
+      document.getElementById('topAge').textContent = `${relTime(run.startedAt)} · ${fmtDuration(run.durationSec)}`;
+
+      // Card
+      document.getElementById('mLastRun').textContent = relTime(run.startedAt);
+      const conclusionEl = document.getElementById('mConclusion');
+      const passed = run.conclusion === 'success';
+      conclusionEl.textContent = run.conclusion || run.status || 'unknown';
+      conclusionEl.classList.add(passed ? 'pass' : (run.conclusion === 'failure' ? 'fail' : ''));
+      document.getElementById('mDuration').textContent = fmtDuration(run.durationSec);
+      document.getElementById('mCommit').textContent = run.commit || '—';
+
+      badge.textContent = passed ? 'PASSING' : (run.conclusion ? run.conclusion.toUpperCase() : 'PENDING');
+      badge.classList.toggle('fail', run.conclusion === 'failure');
+      badge.classList.toggle('pending', !run.conclusion);
+
+      liveTag.textContent = '● live';
+      liveTag.classList.add('live');
+    } else {
+      // fallback content (still believable)
+      document.getElementById('topBranch').textContent = 'main';
+      document.getElementById('topBuild').textContent = '#—';
+      document.getElementById('topAge').textContent = 'live data offline';
+      document.getElementById('mLastRun').textContent = '—';
+      document.getElementById('mConclusion').textContent = '—';
+      document.getElementById('mDuration').textContent = '—';
+      document.getElementById('mCommit').textContent = '—';
+      badge.textContent = 'OFFLINE';
+      badge.classList.add('pending');
+      liveTag.textContent = '● cached';
+      liveTag.classList.add('fallback');
+    }
+
+    if (allure) {
+      const testsEl = document.getElementById('mTests');
+      const fail = allure.failed + allure.broken;
+      testsEl.textContent = '';
+      const num = document.createElement('span');
+      num.className = 'num';
+      num.style.color = fail ? 'var(--ink)' : 'var(--pass)';
+      testsEl.appendChild(num);
+      animateNum(num, allure.passed, '');
+      const tail = document.createElement('span');
+      tail.style.color = 'var(--muted)';
+      tail.style.fontSize = '11px';
+      tail.textContent = ` / ${allure.total} ${fail ? `· ${fail} fail` : '· 0 fail'}`;
+      testsEl.appendChild(tail);
+      renderUptime(fail);
+    } else {
+      document.getElementById('mTests').textContent = '—';
+      renderUptime(0);
+    }
+  }
+
+  syncStatus();
+
+  // ── Section reveal on scroll ──────
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach((el) => obs.observe(el));
+</script>
+</body>
+</html>

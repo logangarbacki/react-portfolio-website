@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock · CI Dashboard direction — Logan Garbacki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=JetBrains+Mono:wght@300;400;500;600&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f7f5f0;
+    --paper: #fbf9f4;
+    --ink: #15140f;
+    --ink-2: #2a2722;
+    --muted: #7a7670;
+    --muted-2: #a8a39a;
+    --border: #e0dbd1;
+    --border-strong: #c9c2b3;
+    --pass: #2f6b41;
+    --pass-bg: #e9f0ea;
+    --accent: #b8a276;
+    --accent-2: #8a6f44;
+    --warn: #b87a2c;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.65;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--ink); color: var(--bg); }
+
+  /* ── Status bar ─────────────────────────────── */
+  .status-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 8px 28px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    letter-spacing: 0.02em;
+    border-bottom: 1px solid #000;
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+    animation: pulse 2.4s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+  }
+  .status-bar .sep { color: #555; }
+  .status-bar .item { color: #c9c2b3; }
+  .status-bar .item strong { color: #fff; font-weight: 500; }
+  .status-bar .right { margin-left: auto; display: flex; gap: 18px; }
+
+  /* ── Top nav ─────────────────────────────── */
+  .nav {
+    padding: 22px 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .logo {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .logo .dot { color: var(--accent-2); }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-mono {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ── Hero ─────────────────────────────── */
+  .hero {
+    padding: 96px 56px 72px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 64px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-left .label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-left .label::before {
+    content: '';
+    width: 24px; height: 1px; background: var(--ink);
+  }
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(56px, 7.2vw, 92px);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+    font-weight: 400;
+    margin-bottom: 16px;
+  }
+  .hero-name em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ink-2);
+  }
+  .hero-role {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 36px;
+  }
+  .hero-role .pass { color: var(--pass); font-weight: 500; }
+  .hero-summary {
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 480px;
+    margin-bottom: 40px;
+    font-weight: 400;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .cmd {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 12px 18px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--bg);
+    transition: background 0.18s ease, transform 0.18s ease;
+    display: inline-flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .cmd:hover { background: var(--ink-2); transform: translateY(-1px); }
+  .cmd.ghost {
+    background: transparent;
+    color: var(--ink);
+  }
+  .cmd.ghost:hover { background: var(--ink); color: var(--bg); }
+  .cmd .caret { color: var(--accent); }
+  .cmd.ghost .caret { color: var(--accent-2); }
+
+  /* Status card on the right */
+  .status-card {
+    background: var(--paper);
+    border: 1px solid var(--border-strong);
+    padding: 0;
+    align-self: start;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  }
+  .status-card-head {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 0.04em;
+  }
+  .status-card-head .badge {
+    background: var(--pass);
+    color: #fff;
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .status-card-body {
+    padding: 18px 20px 20px;
+  }
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .metric-row:last-child { border-bottom: 0; }
+  .metric-row .k { color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; font-size: 10px; }
+  .metric-row .v { color: var(--ink); font-weight: 500; }
+  .metric-row .v.pass { color: var(--pass); }
+  .metric-row .v.accent { color: var(--accent-2); }
+  .uptime-chart {
+    display: flex;
+    gap: 2px;
+    margin-top: 14px;
+  }
+  .uptime-chart .bar {
+    flex: 1;
+    height: 22px;
+    background: var(--pass);
+    border-radius: 1px;
+  }
+  .uptime-chart .bar.warn { background: var(--warn); }
+  .uptime-chart .bar.dim { background: var(--border-strong); }
+  .uptime-legend {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Section log header ─────────────────────────────── */
+  .log-header {
+    padding: 56px 56px 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .log-header .ts { color: var(--muted-2); }
+  .log-header .level {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    padding: 1px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--ink-2);
+  }
+  .log-header .leader {
+    flex: 1;
+    border-bottom: 1px dotted var(--border-strong);
+    margin: 0 4px;
+    align-self: center;
+    height: 1px;
+  }
+  .log-header .status-200 {
+    color: var(--pass);
+    font-weight: 500;
+  }
+  .section-title {
+    padding: 8px 56px 32px;
+    font-family: var(--serif);
+    font-size: 44px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  .section-title em { font-style: italic; color: var(--ink-2); }
+
+  /* ── About ─────────────────────────────── */
+  .about {
+    padding: 24px 56px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 64px;
+    border-bottom: 1px solid var(--border);
+  }
+  .about p {
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    margin-bottom: 18px;
+    max-width: 60ch;
+  }
+  .system-info {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    padding: 24px;
+    align-self: start;
+  }
+  .system-info-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .system-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .system-row .k { color: var(--muted); }
+  .system-row .v { color: var(--ink); font-weight: 500; }
+  .system-row .v .green-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    background: var(--pass);
+    border-radius: 50%;
+    margin-right: 6px;
+    transform: translateY(-1px);
+  }
+
+  /* ── Projects ─────────────────────────────── */
+  .projects-section { padding: 24px 56px 96px; border-bottom: 1px solid var(--border); }
+  .project-card {
+    background: var(--paper);
+    border: 1px solid var(--border-strong);
+    margin-bottom: 18px;
+    transition: border-color 0.18s ease, transform 0.18s ease;
+  }
+  .project-card:hover { border-color: var(--ink); transform: translateY(-1px); }
+  .project-head {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .project-num {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .project-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--pass-bg);
+    color: var(--pass);
+    padding: 3px 10px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    font-weight: 600;
+  }
+  .project-status::before {
+    content: '✓';
+    font-weight: 700;
+  }
+  .project-status.live {
+    background: #fff4e0;
+    color: var(--warn);
+  }
+  .project-status.live::before { content: '●'; }
+  .project-suite {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    flex: 1;
+    min-width: 200px;
+  }
+  .project-meta-tail {
+    color: var(--muted);
+    font-size: 11px;
+  }
+  .project-body {
+    padding: 18px 20px 20px;
+  }
+  .project-stack {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent-2);
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+  .project-desc {
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    margin-bottom: 16px;
+    max-width: 72ch;
+  }
+  .project-metrics {
+    display: flex;
+    gap: 32px;
+    padding: 14px 0;
+    border-top: 1px dashed var(--border);
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .project-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .project-metric .label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .project-metric .value {
+    font-size: 16px;
+    font-family: var(--serif);
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .project-metric .value.pass { color: var(--pass); }
+  .project-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border: 1px solid var(--border-strong);
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    border-radius: 2px;
+  }
+  .link-row { display: flex; gap: 14px; }
+  .link-row a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 1px;
+    transition: color 0.18s, border-color 0.18s;
+  }
+  .link-row a:hover { color: var(--accent-2); border-color: var(--accent-2); }
+
+  /* ── Skills (build matrix) ─────────────────────────────── */
+  .skills-section { padding: 24px 56px 96px; border-bottom: 1px solid var(--border); }
+  .matrix {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--border-strong);
+    background: var(--paper);
+  }
+  .matrix-cell {
+    padding: 22px 24px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .matrix-cell:nth-child(2n) { border-right: 0; }
+  .matrix-cell:nth-last-child(-n+2) { border-bottom: 0; }
+  .matrix-step {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .matrix-step .pass { color: var(--pass); }
+  .matrix-cell h4 {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    letter-spacing: -0.005em;
+  }
+  .matrix-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .matrix-list .tag { background: var(--bg); }
+
+  /* ── Resume (pipeline) ─────────────────────────────── */
+  .resume-section { padding: 24px 56px 96px; border-bottom: 1px solid var(--border); }
+  .pipeline {
+    border-left: 2px solid var(--ink);
+    margin-left: 14px;
+    padding-left: 32px;
+    position: relative;
+  }
+  .stage { position: relative; padding-bottom: 36px; }
+  .stage::before {
+    content: '';
+    position: absolute;
+    left: -41px;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--ink);
+  }
+  .stage.completed::before {
+    background: var(--pass);
+    border-color: var(--pass);
+  }
+  .stage-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+    display: flex;
+    gap: 12px;
+  }
+  .stage-meta .stage-status {
+    color: var(--pass);
+    font-weight: 500;
+  }
+  .stage-role {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .stage-company {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--accent-2);
+    margin-bottom: 14px;
+  }
+  .stage-logs {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+    background: var(--paper);
+    border: 1px solid var(--border);
+    padding: 14px 18px;
+    line-height: 1.85;
+  }
+  .stage-logs .log-line { display: flex; gap: 12px; }
+  .stage-logs .log-line .ts { color: var(--muted-2); flex-shrink: 0; }
+  .stage-logs .log-line .ok { color: var(--pass); flex-shrink: 0; }
+
+  /* ── Contact ─────────────────────────────── */
+  .contact-section {
+    padding: 24px 56px 120px;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: end;
+  }
+  .contact-blurb {
+    font-family: var(--sans);
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 50ch;
+  }
+  .contact-card {
+    background: var(--paper);
+    border: 1px solid var(--border-strong);
+    padding: 0;
+  }
+  .contact-card-head {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+  }
+  .contact-card-head .badge {
+    background: var(--pass);
+    color: #fff;
+    padding: 2px 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+  .contact-row {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .contact-row:last-child { border-bottom: 0; }
+  .contact-row .k { color: var(--muted); }
+  .contact-row .v { color: var(--ink); }
+
+  /* ── Footer ─────────────────────────────── */
+  .footer {
+    background: var(--ink);
+    color: var(--muted-2);
+    padding: 28px 56px;
+    font-family: var(--mono);
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer .right { color: var(--muted); }
+
+  /* ── Responsive ─────────────────────────────── */
+  @media (max-width: 920px) {
+    .hero, .about, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .matrix { grid-template-columns: 1fr; }
+    .matrix-cell { border-right: 0; }
+    .matrix-cell:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+    .matrix-cell:last-child { border-bottom: 0; }
+    .nav { padding: 18px 24px; }
+    .hero, .log-header, .section-title, .about, .projects-section, .skills-section, .resume-section, .contact-section, .footer {
+      padding-left: 24px; padding-right: 24px;
+    }
+    .status-bar { padding: 8px 16px; gap: 12px; flex-wrap: wrap; }
+    .status-bar .right { margin-left: 0; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="status-dot"></span>
+    <span class="item"><strong>logangarbacki.dev</strong></span>
+    <span class="sep">/</span>
+    <span class="item">main</span>
+    <span class="sep">·</span>
+    <span class="item">build <strong>#247</strong></span>
+    <span class="sep">·</span>
+    <span class="item">deploy 2h ago</span>
+    <span class="right">
+      <span class="item">v1.4.2</span>
+      <span class="item">us-east-1</span>
+    </span>
+  </div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="logo">logan<span class="dot">.</span></div>
+    <div class="nav-links">
+      <a href="#about">about</a>
+      <a href="#projects">projects</a>
+      <a href="#skills">skills</a>
+      <a href="#resume">resume</a>
+      <a href="#contact">contact</a>
+    </div>
+    <div class="nav-mono">contact@logangarbacki.dev</div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="label">build summary · run #247</div>
+      <h1 class="hero-name">Logan Garbacki<br /><em>QA Automation.</em></h1>
+      <div class="hero-role">$ status: <span class="pass">● operational</span> · hicksville, ny · open to remote</div>
+      <p class="hero-summary">
+        I build Selenium frameworks in C# that catch real bugs before they ship —
+        and I write the React they're testing. Full-stack perspective on quality:
+        I understand how systems are put together, not just how to break them.
+      </p>
+      <div class="hero-actions">
+        <a class="cmd" href="#projects"><span class="caret">$</span> view projects</a>
+        <a class="cmd ghost" href="/Logan_Garbacki_Resume.pdf"><span class="caret">↓</span> resume.pdf</a>
+      </div>
+    </div>
+
+    <div class="status-card">
+      <div class="status-card-head">
+        <span>$ ./status --verbose</span>
+        <span class="badge">PASSING</span>
+      </div>
+      <div class="status-card-body">
+        <div class="metric-row">
+          <span class="k">test suites</span>
+          <span class="v pass">46 passing · 0 failing</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">last deploy</span>
+          <span class="v">2026-05-03 · 12:14 UTC</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">framework</span>
+          <span class="v">selenium 4 · NUnit · C#</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">avg coverage</span>
+          <span class="v accent">7 SPA sections · 4 categories</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">bugs reduced</span>
+          <span class="v pass">manual testing −40%</span>
+        </div>
+        <div class="metric-row">
+          <span class="k">uptime · 30d</span>
+          <span class="v pass">99.9%</span>
+        </div>
+        <div class="uptime-chart" aria-hidden="true">
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar warn"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
+        <div class="uptime-legend">
+          <span>30 days ago</span>
+          <span>today</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About log header -->
+  <div class="log-header" id="about">
+    <span class="ts">[14:32:01.247]</span>
+    <span class="level">INFO</span>
+    <span>GET /about</span>
+    <span class="leader"></span>
+    <span class="status-200">200 OK</span>
+  </div>
+  <h2 class="section-title">A quick<br /><em>introduction.</em></h2>
+
+  <section class="about">
+    <div>
+      <p>
+        I'm a QA Automation Engineer based in Hicksville, NY. I architect Selenium
+        frameworks in C#, integrate them into CI/CD pipelines with GitHub Actions
+        and Allure reporting, and write React for the front-ends those frameworks
+        are pointed at.
+      </p>
+      <p>
+        At PrintScan I helped build a regression framework that cut manual sprint
+        testing by 40%+. Currently expanding into full-stack TypeScript work and
+        serverless architectures (Next.js, Supabase, OpenRouter LLMs).
+      </p>
+      <p>
+        I think the best automation engineers know exactly how the application
+        is constructed. So I keep building applications.
+      </p>
+    </div>
+
+    <div class="system-info">
+      <div class="system-info-title">system info</div>
+      <div class="system-row"><span class="k">location</span><span class="v">Hicksville, NY</span></div>
+      <div class="system-row"><span class="k">status</span><span class="v"><span class="green-dot"></span>available for hire</span></div>
+      <div class="system-row"><span class="k">focus</span><span class="v">QA automation · full-stack</span></div>
+      <div class="system-row"><span class="k">stack</span><span class="v">C# · React · Next.js · TS</span></div>
+      <div class="system-row"><span class="k">remote</span><span class="v">yes / on-site</span></div>
+      <div class="system-row"><span class="k">timezone</span><span class="v">EST / UTC−5</span></div>
+    </div>
+  </section>
+
+  <!-- Projects log header -->
+  <div class="log-header" id="projects">
+    <span class="ts">[14:32:04.812]</span>
+    <span class="level">INFO</span>
+    <span>GET /projects</span>
+    <span class="leader"></span>
+    <span class="status-200">200 OK · 4 records</span>
+  </div>
+  <h2 class="section-title">Selected<br /><em>test runs.</em></h2>
+
+  <section class="projects-section">
+
+    <!-- Project 1 -->
+    <article class="project-card">
+      <div class="project-head">
+        <span class="project-num">01 /</span>
+        <span class="project-suite">Selenium UI Test Framework</span>
+        <span class="project-status">PASSED</span>
+        <span class="project-meta-tail">duration 1.2s · cross-repo</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions</div>
+        <p class="project-desc">
+          Full Page Object Model framework targeting a live production React/Vite SPA.
+          Resolved real-world automation challenges — scroll-into-view wait logic for
+          IntersectionObserver-deferred elements, and a JS innerText fallback for
+          CSS-animated transparent hero text that <code>.Text</code> returned empty for.
+          Allure reporting auto-deploys to GitHub Pages after every run.
+        </p>
+        <div class="project-metrics">
+          <div class="project-metric">
+            <span class="label">tests</span>
+            <span class="value pass">46</span>
+          </div>
+          <div class="project-metric">
+            <span class="label">categories</span>
+            <span class="value">4</span>
+          </div>
+          <div class="project-metric">
+            <span class="label">sections covered</span>
+            <span class="value">7</span>
+          </div>
+          <div class="project-metric">
+            <span class="label">parallel</span>
+            <span class="value">2x</span>
+          </div>
+          <div class="project-metric">
+            <span class="label">manual testing</span>
+            <span class="value pass">−40%</span>
+          </div>
+        </div>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">smoke</span>
+            <span class="tag">regression</span>
+            <span class="tag">negative</span>
+            <span class="tag">e2e</span>
+          </div>
+          <div class="link-row">
+            <a href="https://github.com/logangarbacki/react-portfolio-selenium-tests">github →</a>
+            <a href="#">allure report →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Project 2 -->
+    <article class="project-card">
+      <div class="project-head">
+        <span class="project-num">02 /</span>
+        <span class="project-suite">AgencyBuilder — Lead Generation Platform</span>
+        <span class="project-status live">LIVE</span>
+        <span class="project-meta-tail">v1.0 · production</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">Next.js 16 · TypeScript · Tailwind v4 · Supabase · OpenRouter · Stripe · Vercel</div>
+        <p class="project-desc">
+          Full-stack TypeScript lead generation tool for local-business agencies.
+          Pulls lead data from Google Places API, stores in Supabase with row-level
+          security, and uses dual-LLM orchestration (Claude 3.5 Haiku for site
+          generation, Gemini 2.5 Flash Lite for chat) routed through OpenRouter.
+          Stripe handles payments. Built on Next.js App Router with serverless
+          route handlers — no separate backend service.
+        </p>
+        <div class="project-metrics">
+          <div class="project-metric">
+            <span class="label">stack</span>
+            <span class="value">full-stack TS</span>
+          </div>
+          <div class="project-metric">
+            <span class="label">LLMs</span>
+            <span class="value">2</span>
+          </div>
+          <div class="project-metric">
+            <span class="label">db rows secured</span>
+            <span class="value pass">RLS</span>
+          </div>
+          <div class="project-metric">
+            <span class="label">payment</span>
+            <span class="value">stripe</span>
+          </div>
+        </div>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">next.js 16</span>
+            <span class="tag">typescript</span>
+            <span class="tag">supabase</span>
+            <span class="tag">openrouter</span>
+            <span class="tag">stripe</span>
+          </div>
+          <div class="link-row">
+            <a href="https://agency-builder-lac.vercel.app">live →</a>
+            <a href="#">github →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Project 3 -->
+    <article class="project-card">
+      <div class="project-head">
+        <span class="project-num">03 /</span>
+        <span class="project-suite">Little Lemon — Full-Stack Restaurant App</span>
+        <span class="project-status">PASSED</span>
+        <span class="project-meta-tail">capstone · meta</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">React · JavaScript · Django · DRF · SQL · Vercel · Railway</div>
+        <p class="project-desc">
+          React SPA with menu browsing, cart, reservations, and token-based
+          authentication backed by a Django REST API on Railway. Cart and
+          reservation data persists to SQL; admins can CRUD menu items and daily
+          specials in real time via the Django admin panel. Toast notifications
+          across all flows.
+        </p>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">react</span>
+            <span class="tag">django</span>
+            <span class="tag">drf</span>
+            <span class="tag">auth</span>
+          </div>
+          <div class="link-row">
+            <a href="https://meta-front-end-developer-capstone-three.vercel.app">live →</a>
+            <a href="#">github →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Project 4 -->
+    <article class="project-card">
+      <div class="project-head">
+        <span class="project-num">04 /</span>
+        <span class="project-suite">Personal Portfolio Site</span>
+        <span class="project-status">PASSED</span>
+        <span class="project-meta-tail">react 18 · vite · this site</span>
+      </div>
+      <div class="project-body">
+        <div class="project-stack">React 18 · Vite · CSS Animations · GitHub Actions</div>
+        <p class="project-desc">
+          The site you're looking at. Single-page React build with custom
+          keyframes, IntersectionObserver scroll reveals, and a live canvas
+          particle system. Wired into the Selenium framework above via
+          <code>repository_dispatch</code> — every push triggers cross-repo UI
+          tests against the production deploy.
+        </p>
+        <div class="project-foot">
+          <div class="tag-row">
+            <span class="tag">react</span>
+            <span class="tag">vite</span>
+            <span class="tag">ci/cd</span>
+          </div>
+          <div class="link-row">
+            <a href="https://logangarbacki.dev">live →</a>
+            <a href="#">github →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Skills log header -->
+  <div class="log-header" id="skills">
+    <span class="ts">[14:32:08.421]</span>
+    <span class="level">INFO</span>
+    <span>GET /skills</span>
+    <span class="leader"></span>
+    <span class="status-200">200 OK · matrix loaded</span>
+  </div>
+  <h2 class="section-title">Build<br /><em>matrix.</em></h2>
+
+  <section class="skills-section">
+    <div class="matrix">
+      <div class="matrix-cell">
+        <div class="matrix-step"><span>step 1 / 4</span><span class="pass">✓ pass</span></div>
+        <h4>Automation & Testing</h4>
+        <div class="matrix-list">
+          <span class="tag">Selenium WebDriver</span>
+          <span class="tag">NUnit</span>
+          <span class="tag">Postman</span>
+          <span class="tag">POM</span>
+          <span class="tag">Explicit Waits</span>
+          <span class="tag">Parallel Execution</span>
+          <span class="tag">Cypress</span>
+          <span class="tag">JMeter</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-step"><span>step 2 / 4</span><span class="pass">✓ pass</span></div>
+        <h4>Languages & Frameworks</h4>
+        <div class="matrix-list">
+          <span class="tag">C#</span>
+          <span class="tag">TypeScript</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">React</span>
+          <span class="tag">Next.js</span>
+          <span class="tag">Django</span>
+          <span class="tag">.NET</span>
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-step"><span>step 3 / 4</span><span class="pass">✓ pass</span></div>
+        <h4>CI/CD & Tooling</h4>
+        <div class="matrix-list">
+          <span class="tag">GitHub Actions</span>
+          <span class="tag">Git</span>
+          <span class="tag">Vite</span>
+          <span class="tag">Allure</span>
+          <span class="tag">Vercel</span>
+          <span class="tag">Supabase</span>
+          <span class="tag">Stripe</span>
+        </div>
+      </div>
+      <div class="matrix-cell">
+        <div class="matrix-step"><span>step 4 / 4</span><span class="pass">✓ pass</span></div>
+        <h4>QA Methodologies</h4>
+        <div class="matrix-list">
+          <span class="tag">Manual Testing</span>
+          <span class="tag">Regression</span>
+          <span class="tag">Smoke</span>
+          <span class="tag">E2E</span>
+          <span class="tag">Defect Tracking</span>
+          <span class="tag">Agile / SDLC</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resume log header -->
+  <div class="log-header" id="resume">
+    <span class="ts">[14:32:11.039]</span>
+    <span class="level">INFO</span>
+    <span>GET /resume</span>
+    <span class="leader"></span>
+    <span class="status-200">200 OK · pipeline.yml</span>
+  </div>
+  <h2 class="section-title">Career<br /><em>pipeline.</em></h2>
+
+  <section class="resume-section">
+    <div class="pipeline">
+      <div class="stage completed">
+        <div class="stage-meta">
+          <span>jul 2023 — dec 2023 · hybrid · new york, ny</span>
+          <span class="stage-status">✓ completed</span>
+        </div>
+        <div class="stage-role">Quality Assurance Specialist</div>
+        <div class="stage-company">PrintScan Fingerprinting</div>
+        <div class="stage-logs">
+          <div class="log-line"><span class="ts">[step 1]</span><span class="ok">✓</span><span>Built Selenium regression framework in C# — manual testing −40%</span></div>
+          <div class="log-line"><span class="ts">[step 2]</span><span class="ok">✓</span><span>Performed manual + automated testing across multiple environments</span></div>
+          <div class="log-line"><span class="ts">[step 3]</span><span class="ok">✓</span><span>Investigated, reproduced, documented bugs in Agile sprints</span></div>
+          <div class="log-line"><span class="ts">[step 4]</span><span class="ok">✓</span><span>Engineered DB-driven location search system — improved SEO + nav</span></div>
+          <div class="log-line"><span class="ts">[step 5]</span><span class="ok">✓</span><span>Built custom automation tools for internal appointment workflows</span></div>
+        </div>
+      </div>
+
+      <div class="stage completed">
+        <div class="stage-meta">
+          <span>dec 2021 — mar 2023 · on-site · new york, ny</span>
+          <span class="stage-status">✓ completed</span>
+        </div>
+        <div class="stage-role">Guest Advocate</div>
+        <div class="stage-company">Target</div>
+        <div class="stage-logs">
+          <div class="log-line"><span class="ts">[step 1]</span><span class="ok">✓</span><span>High-volume customer service — comms, problem-solving, adaptability</span></div>
+        </div>
+      </div>
+
+      <div class="stage completed">
+        <div class="stage-meta">
+          <span>graduated 2023 · gpa 3.8 · ap cs a · score 4</span>
+          <span class="stage-status">✓ completed</span>
+        </div>
+        <div class="stage-role">High School Diploma</div>
+        <div class="stage-company">Hicksville High School</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact log header -->
+  <div class="log-header" id="contact">
+    <span class="ts">[14:32:14.601]</span>
+    <span class="level">INFO</span>
+    <span>POST /contact</span>
+    <span class="leader"></span>
+    <span class="status-200">200 OK · awaiting message</span>
+  </div>
+  <h2 class="section-title">Open a<br /><em>connection.</em></h2>
+
+  <section class="contact-section">
+    <div class="contact-grid">
+      <p class="contact-blurb">
+        Open to QA engineering roles, automation contracts, and full-stack
+        freelance work. Based in Hicksville, NY · available remote or on-site.
+      </p>
+
+      <div class="contact-card">
+        <div class="contact-card-head">
+          <span>$ ./contact.sh</span>
+          <span class="badge">READY</span>
+        </div>
+        <div class="contact-row"><span class="k">email</span><span class="v">contact@logangarbacki.dev</span></div>
+        <div class="contact-row"><span class="k">phone</span><span class="v">516.749.7910</span></div>
+        <div class="contact-row"><span class="k">github</span><span class="v">github.com/logangarbacki</span></div>
+        <div class="contact-row"><span class="k">linkedin</span><span class="v">linkedin.com/in/logangarbacki</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div>© 2026 · logangarbacki.dev · all systems operational</div>
+    <div class="right">$ exit 0</div>
+  </footer>
+
+</body>
+</html>

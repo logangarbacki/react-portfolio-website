@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mock · Lab Notebook direction — Logan Garbacki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #faf7f0;
+    --paper-2: #f3eee2;
+    --ink: #14110b;
+    --ink-2: #2c2820;
+    --muted: #6b665c;
+    --muted-2: #98928a;
+    --rule: #14110b;
+    --rule-soft: #d4cdbb;
+    --margin: #b3a98f;
+    --accent: #6f2c2c;          /* deep oxblood — used sparingly */
+    --accent-soft: #f0e6df;
+    --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+    --sans:  'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono:  'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      linear-gradient(to right, transparent 0, transparent 100%);
+  }
+  ::selection { background: var(--ink); color: var(--paper); }
+  a { color: inherit; text-decoration: none; }
+
+  /* Subtle paper texture */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(180,150,100,0.025) 0, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(180,150,100,0.02) 0, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Document header ─────────────────────────────── */
+  .doc-header {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 36px 64px 24px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    position: relative;
+    z-index: 1;
+  }
+  .doc-header .left { display: flex; gap: 22px; }
+  .doc-header .left strong { color: var(--ink); font-weight: 500; }
+  .doc-header .right { display: flex; gap: 22px; }
+  .doc-header a { color: var(--muted); transition: color 0.15s; }
+  .doc-header a:hover { color: var(--accent); }
+
+  /* ── Title block ─────────────────────────────── */
+  .title-block {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 80px 64px 48px;
+    text-align: center;
+    border-bottom: 1px double var(--rule);
+    position: relative;
+    z-index: 1;
+  }
+  .article-mark {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .article-mark .ornament {
+    color: var(--accent);
+    margin: 0 8px;
+  }
+  .doc-title {
+    font-family: var(--serif);
+    font-size: clamp(56px, 8vw, 104px);
+    font-weight: 400;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+  }
+  .doc-title em {
+    font-style: italic;
+    color: var(--ink-2);
+  }
+  .doc-subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    font-weight: 400;
+  }
+  .doc-byline {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .doc-byline .sep { color: var(--rule-soft); }
+  .doc-byline strong { color: var(--ink); font-weight: 500; }
+
+  /* ── Abstract ─────────────────────────────── */
+  .abstract {
+    max-width: 720px;
+    margin: 64px auto 0;
+    padding: 0 64px 80px;
+    position: relative;
+    z-index: 1;
+  }
+  .abstract-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .abstract p {
+    font-family: var(--serif);
+    font-size: 21px;
+    line-height: 1.62;
+    color: var(--ink-2);
+    text-align: justify;
+    hyphens: auto;
+  }
+  .abstract p:first-of-type::first-letter {
+    font-family: var(--serif);
+    float: left;
+    font-size: 78px;
+    line-height: 0.9;
+    margin: 8px 10px -2px 0;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ── Document body w/ sidenotes ─────────────────────────────── */
+  .doc {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 24px 64px 96px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    column-gap: 56px;
+    margin-bottom: 96px;
+    border-top: 1px solid var(--rule-soft);
+    padding-top: 56px;
+  }
+  .section.no-rule { border-top: 0; padding-top: 0; }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .section-num::before {
+    content: '§';
+    margin-right: 6px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+  }
+  .section h2 {
+    font-family: var(--serif);
+    font-size: 44px;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin-bottom: 32px;
+    max-width: 16ch;
+  }
+  .section h2 em { font-style: italic; color: var(--ink-2); }
+
+  .body-col p {
+    font-family: var(--serif);
+    font-size: 18.5px;
+    line-height: 1.7;
+    color: var(--ink-2);
+    margin-bottom: 18px;
+    max-width: 62ch;
+  }
+  .body-col p sup {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: 500;
+    cursor: help;
+    margin: 0 1px;
+  }
+
+  /* sidenotes */
+  .side-col {
+    border-left: 1px solid var(--rule-soft);
+    padding-left: 22px;
+  }
+  .sidenote {
+    font-family: var(--sans);
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+  .sidenote .num {
+    font-family: var(--mono);
+    color: var(--accent);
+    font-size: 10px;
+    margin-right: 6px;
+    font-weight: 500;
+  }
+  .sidenote strong { color: var(--ink-2); font-weight: 600; }
+
+  /* ── Figure (project) ─────────────────────────────── */
+  .figure {
+    margin: 32px 0;
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
+  }
+  .figure-cap {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .figure-cap strong { color: var(--ink); font-weight: 500; }
+  .figure-title {
+    font-family: var(--serif);
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .figure-title em { font-style: italic; color: var(--ink-2); }
+  .figure-stack {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+  }
+  .figure-body {
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink-2);
+    margin-bottom: 16px;
+    max-width: 64ch;
+  }
+  .figure-body em {
+    font-style: italic;
+    color: var(--ink);
+  }
+  .figure-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 8px;
+  }
+  .figure-foot .links { display: flex; gap: 16px; }
+  .figure-foot .links a {
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .figure-foot .links a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .figure-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .figure-tags span {
+    font-family: var(--sans);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .figure-tags span:not(:last-child)::after {
+    content: '·';
+    margin-left: 4px;
+    color: var(--rule-soft);
+  }
+
+  /* ── Skills (definition list) ─────────────────────────────── */
+  .defs { font-family: var(--serif); font-size: 17px; line-height: 1.65; }
+  .def-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 28px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .def-row:first-child { border-top: 1px solid var(--rule); }
+  .def-row dt {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-top: 4px;
+  }
+  .def-row dd {
+    color: var(--ink-2);
+    font-style: italic;
+  }
+
+  /* ── Resume (timeline as document entries) ─────────────────────────────── */
+  .entry {
+    margin-bottom: 36px;
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .entry:last-child { border-bottom: 0; }
+  .entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .entry-role {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  .entry-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .entry-org {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 17px;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .entry-body ul {
+    list-style: none;
+    padding: 0;
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+  .entry-body li {
+    padding-left: 28px;
+    position: relative;
+    margin-bottom: 10px;
+    max-width: 62ch;
+  }
+  .entry-body li::before {
+    content: '§';
+    font-style: italic;
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 16px;
+  }
+
+  /* ── Correspondence (contact) ─────────────────────────────── */
+  .correspondence {
+    text-align: center;
+    padding: 56px 0;
+    border-top: 1px double var(--rule);
+    border-bottom: 1px double var(--rule);
+    margin-top: 24px;
+  }
+  .correspondence h2 {
+    font-family: var(--serif);
+    font-size: 56px;
+    line-height: 1.05;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .correspondence h2 em { font-style: italic; color: var(--ink-2); }
+  .correspondence .tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    max-width: 56ch;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
+  }
+  .correspondence-email {
+    font-family: var(--serif);
+    font-size: 32px;
+    color: var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 4px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .correspondence-email:hover { color: var(--accent); border-color: var(--accent); }
+  .correspondence-meta {
+    margin-top: 28px;
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .correspondence-meta a:hover { color: var(--accent); }
+
+  /* ── Colophon (footer) ─────────────────────────────── */
+  .colophon {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 36px 64px 56px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    text-align: center;
+  }
+  .colophon span:first-child { font-style: italic; text-transform: none; letter-spacing: 0.02em; font-family: var(--serif); font-size: 13px; color: var(--ink-2); }
+
+  /* ── Responsive ─────────────────────────────── */
+  @media (max-width: 920px) {
+    .section { grid-template-columns: 1fr; row-gap: 24px; }
+    .side-col { border-left: 0; border-top: 1px solid var(--rule-soft); padding-left: 0; padding-top: 16px; }
+    .doc, .title-block, .abstract, .doc-header, .colophon { padding-left: 28px; padding-right: 28px; }
+    .doc-header { flex-direction: column; gap: 8px; }
+    .def-row { grid-template-columns: 1fr; gap: 4px; }
+    .entry-head { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Document header (running header) -->
+  <header class="doc-header">
+    <div class="left">
+      <span><strong>logangarbacki.dev</strong></span>
+      <span>vol. i · no. 1</span>
+      <span>may 2026</span>
+    </div>
+    <div class="right">
+      <a href="#about">§1</a>
+      <a href="#projects">§2</a>
+      <a href="#skills">§3</a>
+      <a href="#resume">§4</a>
+      <a href="#contact">§5</a>
+    </div>
+  </header>
+
+  <!-- Title block -->
+  <section class="title-block">
+    <div class="article-mark">A field notebook <span class="ornament">❦</span> on quality assurance</div>
+    <h1 class="doc-title">Logan Garbacki<br /><em>QA Automation.</em></h1>
+    <p class="doc-subtitle">A working catalog of frameworks tested, applications shipped, and quality earned.</p>
+    <div class="doc-byline">
+      <span><strong>Author</strong> Logan Garbacki</span>
+      <span class="sep">·</span>
+      <span><strong>Location</strong> Hicksville, NY</span>
+      <span class="sep">·</span>
+      <span><strong>Status</strong> Available for hire</span>
+      <span class="sep">·</span>
+      <span><strong>Revision</strong> 1.4.2</span>
+    </div>
+  </section>
+
+  <!-- Abstract -->
+  <section class="abstract">
+    <div class="abstract-label">— Abstract —</div>
+    <p>
+      The author is a self-taught QA Automation Engineer with a full-stack
+      perspective on quality. He builds Selenium frameworks in C# that hold up
+      under sprint pressure, and writes the React applications they're aimed at.
+      At PrintScan he helped develop a framework that reduced manual regression
+      testing by over forty percent. What follows is a catalog of selected work,
+      capabilities, and prior engagements — recorded here in lieu of a more
+      conventional résumé.
+    </p>
+  </section>
+
+  <main class="doc">
+
+    <!-- §1 Notes on the author -->
+    <article class="section no-rule" id="about">
+      <div class="body-col">
+        <div class="section-num">I — Notes on the author</div>
+        <h2>Quality first,<br /><em>always.</em></h2>
+        <p>
+          I am, by trade and disposition, a tester. I learned C# before I learned
+          React, which is to say I learned how to break software before I learned
+          how to build it.<sup>1</sup> The result is a particular point of view —
+          an automation engineer who can read a stack trace as comfortably as a
+          stylesheet, and who treats every front-end as a system that owes its
+          users a working state.
+        </p>
+        <p>
+          At PrintScan I worked alongside a senior developer to architect a
+          regression framework in C# that reduced manual sprint testing by more
+          than forty percent.<sup>2</sup> I'm currently extending that posture
+          into full-stack TypeScript work — Next.js, Supabase, and serverless
+          orchestration of language models — because I believe the best
+          automation engineers know exactly how the application is constructed.
+          So I keep building applications.
+        </p>
+      </div>
+      <aside class="side-col">
+        <div class="sidenote"><span class="num">¹</span> The author's first programming language was C# at fifteen, learned through Microsoft's <strong>Foundational C#</strong> course. The first JavaScript came later, at nineteen.</div>
+        <div class="sidenote"><span class="num">²</span> Concretely: 46 automated tests across smoke, regression, negative, and end-to-end categories. Manual regression that previously consumed roughly two engineering days now consumes one.</div>
+        <div class="sidenote"><span class="num">³</span> Open to QA roles, automation contracts, and full-stack freelance work. Available remote or on-site in the New York metropolitan area.</div>
+      </aside>
+    </article>
+
+    <!-- §2 Selected work -->
+    <article class="section" id="projects">
+      <div class="body-col">
+        <div class="section-num">II — Selected work</div>
+        <h2>A catalog of<br /><em>built things.</em></h2>
+
+        <!-- Figure 1 -->
+        <div class="figure">
+          <div class="figure-cap"><strong>Figure 1.</strong> Selenium UI Test Framework <span style="color:var(--rule-soft)">·</span> 2024 — present</div>
+          <h3 class="figure-title">A regression framework, written from scratch.</h3>
+          <div class="figure-stack">C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions</div>
+          <p class="figure-body">
+            A full Page Object Model framework targeting a live production
+            React/Vite SPA — <em>forty-six tests across four categories</em>,
+            covering seven sections. Of particular note: scroll-into-view wait
+            logic in <code>DriverUtils.Find</code> to handle
+            <em>IntersectionObserver</em>-deferred elements, and a JavaScript
+            <code>innerText</code> fallback to extract CSS-animated transparent
+            hero text that Selenium's <code>.Text</code> stubbornly returned
+            empty for. Allure reports auto-deploy to GitHub Pages on every run.
+          </p>
+          <div class="figure-foot">
+            <div class="figure-tags">
+              <span>POM</span><span>parallel execution</span><span>cross-repo dispatch</span><span>screenshot capture</span>
+            </div>
+            <div class="links">
+              <a href="https://github.com/logangarbacki/react-portfolio-selenium-tests">github</a>
+              <a href="#">allure report</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Figure 2 -->
+        <div class="figure">
+          <div class="figure-cap"><strong>Figure 2.</strong> AgencyBuilder <span style="color:var(--rule-soft)">·</span> 2026 — present</div>
+          <h3 class="figure-title">A lead-generation platform <em>(in beta).</em></h3>
+          <div class="figure-stack">Next.js 16 · TypeScript · Tailwind v4 · Supabase · OpenRouter · Stripe · Vercel</div>
+          <p class="figure-body">
+            A full-stack TypeScript application for local-business agencies,
+            built on the Next.js App Router with serverless route handlers in
+            place of a separate backend service. Lead data is sourced from
+            <em>Google Places</em>; storage and authentication run through
+            <em>Supabase</em> with row-level security; payments through
+            <em>Stripe</em>. Two language models — Anthropic's Claude 3.5 Haiku
+            for site generation, Google's Gemini 2.5 Flash Lite for chat —
+            are routed through OpenRouter. No Python; no separate backend
+            language. TypeScript end-to-end.
+          </p>
+          <div class="figure-foot">
+            <div class="figure-tags">
+              <span>full-stack TS</span><span>RLS</span><span>dual-LLM</span><span>serverless</span>
+            </div>
+            <div class="links">
+              <a href="https://agency-builder-lac.vercel.app">live</a>
+              <a href="#">github</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Figure 3 -->
+        <div class="figure">
+          <div class="figure-cap"><strong>Figure 3.</strong> Little Lemon <span style="color:var(--rule-soft)">·</span> 2025 — 2026</div>
+          <h3 class="figure-title">A full-stack <em>restaurant.</em></h3>
+          <div class="figure-stack">React · JavaScript · Django · Django REST Framework · SQL · Vercel · Railway</div>
+          <p class="figure-body">
+            A React single-page application with menu browsing, cart,
+            reservations, and token-based authentication, served by a Django
+            REST API on Railway. Users must register and sign in to reserve or
+            order; admins manage menu items and daily specials in real time
+            through the Django admin panel. Toast notifications cover every
+            user-facing flow.
+          </p>
+          <div class="figure-foot">
+            <div class="figure-tags">
+              <span>React SPA</span><span>DRF</span><span>token auth</span><span>admin panel</span>
+            </div>
+            <div class="links">
+              <a href="https://meta-front-end-developer-capstone-three.vercel.app">live</a>
+              <a href="#">github</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Figure 4 -->
+        <div class="figure">
+          <div class="figure-cap"><strong>Figure 4.</strong> Personal portfolio site <span style="color:var(--rule-soft)">·</span> 2025 — present</div>
+          <h3 class="figure-title">The document <em>you are reading.</em></h3>
+          <div class="figure-stack">React 18 · Vite · CSS keyframes · GitHub Actions</div>
+          <p class="figure-body">
+            A single-page React build with custom keyframe animations,
+            <em>IntersectionObserver</em> scroll reveals, and a live canvas
+            particle system. The repository is wired into the Selenium framework
+            described in Figure 1 via <code>repository_dispatch</code>: every
+            push triggers cross-repository UI tests against the production
+            deploy.
+          </p>
+          <div class="figure-foot">
+            <div class="figure-tags"><span>continuous validation</span><span>cross-repo CI</span></div>
+            <div class="links">
+              <a href="https://logangarbacki.dev">live</a>
+              <a href="#">github</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <aside class="side-col">
+        <div class="sidenote"><span class="num">⁴</span> The framework is <strong>cross-repository</strong>. The portfolio repository dispatches a <code>repository_dispatch</code> event on every push; the framework repository receives it and re-runs against production.</div>
+        <div class="sidenote"><span class="num">⁵</span> The transparent-hero-text problem is a representative example. Selenium's <code>.Text</code> reads the rendered text node, but CSS opacity transitions make that node legally empty until they conclude. <code>innerText</code>, executed via JS, sees through that.</div>
+        <div class="sidenote"><span class="num">⁶</span> AgencyBuilder uses two LLMs because the workloads differ: site generation is structured and benefits from Claude's instruction following; chat is conversational and benefits from Gemini's latency.</div>
+        <div class="sidenote"><span class="num">⁷</span> Little Lemon was the author's <strong>Meta capstone project</strong>, since extended well past the assignment scope.</div>
+      </aside>
+    </article>
+
+    <!-- §3 Capabilities -->
+    <article class="section" id="skills">
+      <div class="body-col">
+        <div class="section-num">III — Capabilities</div>
+        <h2>What the<br /><em>author works with.</em></h2>
+        <dl class="defs">
+          <div class="def-row">
+            <dt>Automation & testing</dt>
+            <dd>Selenium WebDriver, NUnit, Postman, the Page Object Model, explicit waits, parallel fixture execution, Cypress, JMeter.</dd>
+          </div>
+          <div class="def-row">
+            <dt>Languages & frameworks</dt>
+            <dd>C#, TypeScript, JavaScript, React, Next.js, Django, .NET, HTML, CSS.</dd>
+          </div>
+          <div class="def-row">
+            <dt>CI/CD & tooling</dt>
+            <dd>GitHub Actions, Git, Vite, Allure, Vercel, Supabase, Stripe.</dd>
+          </div>
+          <div class="def-row">
+            <dt>QA methodologies</dt>
+            <dd>Manual testing, regression, smoke, end-to-end, defect tracking, Agile/SDLC.</dd>
+          </div>
+          <div class="def-row">
+            <dt>Certifications</dt>
+            <dd>Meta Full-Stack Engineer (2026), IBM Software Testing (2026), Coursera QA Automation (2026), Pluralsight Selenium 4 with C# (2023), Microsoft Foundational C# (2023).</dd>
+          </div>
+        </dl>
+      </div>
+      <aside class="side-col">
+        <div class="sidenote"><span class="num">⁸</span> The author is most fluent in <strong>C#</strong> and <strong>TypeScript</strong>. The other languages and frameworks are working knowledge — sufficient to build and ship, not necessarily to argue at length about edge cases.</div>
+        <div class="sidenote"><span class="num">⁹</span> Certifications are listed because they're true; the author treats them as paperwork rather than evidence.</div>
+      </aside>
+    </article>
+
+    <!-- §4 Engagements -->
+    <article class="section" id="resume">
+      <div class="body-col">
+        <div class="section-num">IV — Prior engagements</div>
+        <h2>A working<br /><em>history.</em></h2>
+
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-role">Quality Assurance Specialist</span>
+            <span class="entry-date">jul 2023 — dec 2023</span>
+          </div>
+          <div class="entry-org">PrintScan Fingerprinting <span style="color:var(--muted-2)">— New York, NY · hybrid</span></div>
+          <div class="entry-body">
+            <ul>
+              <li>Architected and built a Selenium-based regression testing framework in C# alongside a senior developer, reducing manual testing effort by more than forty percent during sprint cycles.</li>
+              <li>Performed manual and automated testing across multiple environments; identified defects, ensured stability, verified adherence to functional specifications.</li>
+              <li>Investigated, reproduced, and documented bugs in collaboration with developers; resolved within sprints under Agile methodology.</li>
+              <li>Contributed bug fixes and feature work to the C# codebase; engineered a database-driven location search system that improved navigation and SEO.</li>
+              <li>Developed custom automation tools for internal workflows, including automated appointment creation for testing.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-role">Guest Advocate</span>
+            <span class="entry-date">dec 2021 — mar 2023</span>
+          </div>
+          <div class="entry-org">Target <span style="color:var(--muted-2)">— New York, NY · on-site</span></div>
+          <div class="entry-body">
+            <ul>
+              <li>Delivered customer service in a high-volume retail environment; developed communication, problem-solving, and adaptability skills in a fast-paced team setting.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="entry">
+          <div class="entry-head">
+            <span class="entry-role">High School Diploma</span>
+            <span class="entry-date">graduated 2023</span>
+          </div>
+          <div class="entry-org">Hicksville High School <span style="color:var(--muted-2)">— gpa 3.8 · ap cs a, score 4</span></div>
+        </div>
+
+      </div>
+      <aside class="side-col">
+        <div class="sidenote"><span class="num">¹⁰</span> The PrintScan engagement was the author's first formal QA role. The forty-percent figure is conservative; most sprints saw closer to half.</div>
+        <div class="sidenote"><span class="num">¹¹</span> Target taught patience under volume. The author lists it because it was real work, and because customer-service skills are not unrelated to writing useful bug reports.</div>
+      </aside>
+    </article>
+
+    <!-- §5 Correspondence -->
+    <section class="correspondence" id="contact">
+      <div class="section-num" style="text-align:center; margin-bottom: 18px;">V — Correspondence</div>
+      <h2>Let's build<br /><em>something.</em></h2>
+      <p class="tagline">
+        Open to QA engineering roles, automation contracts, and full-stack
+        freelance work. Based in Hicksville, NY — available remote or on-site.
+      </p>
+      <a href="mailto:contact@logangarbacki.dev" class="correspondence-email">
+        contact@logangarbacki.dev
+      </a>
+      <div class="correspondence-meta">
+        <a href="tel:5167497910">516.749.7910</a>
+        <a href="https://github.com/logangarbacki">github.com/logangarbacki</a>
+        <a href="https://linkedin.com/in/logangarbacki">linkedin.com/in/logangarbacki</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Colophon -->
+  <footer class="colophon">
+    <span>Set in EB Garamond &amp; IBM Plex. Composed in 2026 by the author. © Logan Garbacki.</span>
+    <span>fin · §V</span>
+  </footer>
+
+</body>
+</html>
