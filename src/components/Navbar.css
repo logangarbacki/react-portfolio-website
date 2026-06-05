@@ -3,26 +3,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-family: var(--sans);
+  font-size: 14px;
 }
 .nav-name {
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 500;
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 600;
   letter-spacing: -0.01em;
+  color: var(--ink);
 }
-.nav-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 14px;
-  background: var(--accent);
-  margin-left: 2px;
-  transform: translateY(2px);
-  animation: blink 1.1s steps(1) infinite;
-}
-.nav-links { display: flex; gap: 28px; color: var(--muted); }
+.nav-links { display: flex; gap: 26px; align-items: center; color: var(--muted); }
 .nav-links a {
-  transition: color 0.15s;
+  transition: color 0.15s, border-color 0.15s;
   border-bottom: 1px solid transparent;
   padding-bottom: 2px;
 }
@@ -30,5 +23,5 @@
 
 @media (max-width: 920px) {
   .nav { padding: 18px 24px; }
-  .nav-links { display: none; }
+  .nav-links { gap: 18px; }
 }

@@ -12,10 +12,12 @@
   padding: 10px 16px;
   font-family: var(--mono);
   font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
-.contact-card-head .caret { color: var(--accent); }
 .contact-card-head .badge {
   background: var(--pass);
   color: var(--terminal);
@@ -25,49 +27,47 @@
   font-weight: 600;
 }
 .contact-blurb {
-  padding: 22px 20px;
-  font-family: var(--mono);
-  font-size: 14.5px;
-  line-height: 1.7;
+  padding: 22px 22px;
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
   color: var(--ink-2);
   border-bottom: 1px solid var(--rule-soft);
 }
-.contact-form {
-  padding: 8px 20px 20px;
-}
+.contact-form { padding: 10px 22px 22px; }
 .form-row {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 14px;
   padding: 12px 0;
   border-bottom: 1px solid var(--rule-soft);
 }
 .form-row:last-of-type { border-bottom: 0; }
-.form-row .prompt {
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.02em;
-  width: 96px;
+.form-label {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  width: 84px;
   flex-shrink: 0;
-  padding-top: 6px;
+  padding-top: 7px;
 }
 .form-row input,
 .form-row textarea {
   flex: 1;
   background: transparent;
   border: 0;
-  border-bottom: 1px dashed var(--rule);
-  font-family: var(--mono);
-  font-size: 14px;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 15px;
   color: var(--ink);
-  padding: 6px 4px;
+  padding: 6px 2px;
   outline: none;
   transition: border-color 0.18s;
   resize: vertical;
-  min-height: 30px;
+  min-height: 32px;
 }
-.form-row textarea { min-height: 80px; }
+.form-row textarea { min-height: 84px; }
 .form-row input:focus,
 .form-row textarea:focus { border-bottom-color: var(--accent); }
 .form-row input::placeholder,
@@ -77,27 +77,21 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding-top: 14px;
+  padding-top: 16px;
 }
 .form-actions .submit {
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 10px 18px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 11px 20px;
   border: 1px solid var(--ink);
   background: var(--ink);
   color: var(--bg);
   cursor: pointer;
-  letter-spacing: 0.02em;
   transition: background 0.18s, color 0.18s, transform 0.18s;
 }
-.form-actions .submit:hover { background: var(--accent); color: var(--terminal); transform: translateY(-1px); }
-.form-actions .submit:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-.form-actions .submit .caret { color: var(--accent); margin-right: 4px; }
-.form-actions .submit:hover .caret { color: var(--terminal); }
+.form-actions .submit:hover { background: var(--accent); color: var(--terminal); border-color: var(--accent); transform: translateY(-1px); }
+.form-actions .submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .form-actions .hint {
   font-family: var(--mono);
   font-size: 10.5px;
@@ -106,15 +100,14 @@
 }
 
 .form-success {
-  padding: 22px 20px;
-  font-family: var(--mono);
-  font-size: 14px;
+  padding: 22px;
+  font-family: var(--sans);
+  font-size: 15px;
   color: var(--ink-2);
   line-height: 1.7;
 }
-.form-success .ok-line { color: var(--pass); margin-bottom: 8px; }
+.form-success .ok-line { font-family: var(--mono); color: var(--pass); margin-bottom: 8px; font-size: 13px; }
 .form-success .ok-line .prefix { color: var(--pass); }
-.form-success .arrow { color: var(--accent); }
 
 .form-error {
   margin-top: 14px;
@@ -133,7 +126,7 @@
   display: flex;
   gap: 28px;
   flex-wrap: wrap;
-  padding: 14px 20px;
+  padding: 16px 22px;
   border-top: 1px solid var(--rule-soft);
   font-family: var(--mono);
   font-size: 11px;
@@ -143,6 +136,6 @@
 
 @media (max-width: 920px) {
   .contact { padding: 0 24px 80px; }
-  .form-row { flex-direction: column; gap: 4px; }
-  .form-row .prompt { width: auto; padding-top: 0; }
+  .form-row { flex-direction: column; gap: 6px; }
+  .form-label { width: auto; padding-top: 0; }
 }

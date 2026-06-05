@@ -1,18 +1,18 @@
 .footer {
   background: var(--terminal);
   color: var(--muted);
-  padding: 26px 56px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.04em;
+  padding: 24px 56px;
+  font-family: var(--sans);
+  font-size: 13px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
   border-top: 1px solid var(--rule);
 }
-.footer .right { color: var(--muted-2); }
+.footer .right a { color: var(--ink-2); }
+.footer .right a:hover { color: var(--accent); }
 
 @media (max-width: 920px) {
-  .footer { padding: 26px 24px; }
+  .footer { padding: 22px 24px; }
 }

@@ -1,36 +1,36 @@
 .about {
-  padding: 0 56px 96px;
-  max-width: 740px;
+  padding: 0 56px 80px;
+  max-width: 780px;
 }
 .about p {
-  font-family: var(--mono);
-  font-size: 16px;
-  line-height: 1.75;
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.7;
   color: var(--ink-2);
   margin-bottom: 16px;
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.7s cubic-bezier(0.2, 0.6, 0.2, 1), transform 0.7s cubic-bezier(0.2, 0.6, 0.2, 1);
 }
-.about p.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.about p:nth-child(2) { transition-delay: 0.15s; }
 .about p em {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 19px;
+  font-style: normal;
+  font-weight: 600;
   color: var(--ink);
 }
 .about p code {
+  font-family: var(--mono);
+  font-size: 0.85em;
   background: var(--paper);
   border: 1px solid var(--rule-soft);
   padding: 1px 6px;
   border-radius: 2px;
-  font-size: 13.5px;
+  color: var(--ink);
 }
+.about-agency {
+  font-size: 15px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.about-agency a { color: var(--accent); }
+.about-agency a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 @media (max-width: 920px) {
-  .about { padding: 0 24px 64px; }
+  .about { padding: 0 24px 60px; }
 }

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import './Contact.css';
-import SectionLog from './SectionLog';
 
 // Formspree endpoint. Override via VITE_CONTACT_ENDPOINT in env vars if needed.
 const CONTACT_ENDPOINT =
@@ -46,31 +45,26 @@ export default function Contact() {
       await sleep(700);
       setSubmitting(false);
       setSuccess(true);
-      typeSuccess('POST /contact → ok');
+      typeSuccess('POST /contact → 200 ok');
       return;
     }
 
     try {
       const res = await fetch(CONTACT_ENDPOINT, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(
-          data?.error ||
-            data?.errors?.[0]?.message ||
-            `Server returned ${res.status}`
+          data?.error || data?.errors?.[0]?.message || `Server returned ${res.status}`
         );
       }
 
       setSuccess(true);
-      typeSuccess(`POST /contact → ok (${res.status})`);
+      typeSuccess(`POST /contact → ${res.status} ok`);
     } catch (err) {
       setError(err.message || 'Send failed. Email contact@logangarbacki.dev directly.');
     } finally {
@@ -84,17 +78,20 @@ export default function Contact() {
 
   return (
     <>
-      <SectionLog id="contact" ts="[01:02]" path="/contact" method="POST" />
-      <section className="contact" data-testid="contact">
+      <div className="section-head">
+        <span className="ix">03</span>
+        <h2>Get in touch</h2>
+      </div>
+      <section className="contact" id="contact" data-testid="contact">
         <div className="contact-card">
           <div className="contact-card-head">
-            <span><span className="caret">$</span> ./reach-out</span>
-            <span className="badge">READY</span>
+            <span>contact</span>
+            <span className="badge">open to work</span>
           </div>
           <div className="contact-blurb">
-            Open to engineering roles — QA, developer, full-stack, anything in
-            between. Contracts and freelance work also welcome. Remote or
-            LI/NYC area.
+            I'm looking for a full-time QA Automation, SDET, or software
+            engineering role — around NYC / Long Island or remote. Send a note and
+            I'll read it myself.
           </div>
 
           {!success && (
@@ -106,43 +103,20 @@ export default function Contact() {
               data-testid="contact-form"
             >
               <div className="form-row">
-                <span className="prompt">&gt; name</span>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="who's writing?"
-                  required
-                  data-testid="contact-name"
-                />
+                <label className="form-label" htmlFor="cf-name">Name</label>
+                <input id="cf-name" type="text" name="name" placeholder="Your name" required data-testid="contact-name" />
               </div>
               <div className="form-row">
-                <span className="prompt">&gt; email</span>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="where to reply"
-                  required
-                  data-testid="contact-email"
-                />
+                <label className="form-label" htmlFor="cf-email">Email</label>
+                <input id="cf-email" type="email" name="email" placeholder="Where to reply" required data-testid="contact-email" />
               </div>
               <div className="form-row">
-                <span className="prompt">&gt; message</span>
-                <textarea
-                  name="message"
-                  rows="4"
-                  placeholder="what's on your mind…"
-                  required
-                  data-testid="contact-message"
-                />
+                <label className="form-label" htmlFor="cf-message">Message</label>
+                <textarea id="cf-message" name="message" rows="4" placeholder="What's on your mind?" required data-testid="contact-message" />
               </div>
               <div className="form-actions">
-                <button
-                  type="submit"
-                  className="submit"
-                  disabled={submitting}
-                  data-testid="contact-submit"
-                >
-                  <span className="caret">$</span> {submitting ? 'sending...' : 'send'}
+                <button type="submit" className="submit" disabled={submitting} data-testid="contact-submit">
+                  {submitting ? 'Sending…' : 'Send message'}
                 </button>
                 <span className="hint">enter to submit · esc to clear</span>
               </div>
@@ -156,12 +130,10 @@ export default function Contact() {
 
           {success && (
             <div className="form-success" data-testid="contact-success">
-              <div className="ok-line">
+              <div className="ok-line mono">
                 <span className="prefix">[200]</span> {successText}
               </div>
-              <div>
-                <span className="arrow">&gt;</span> message received. expect a reply within 24 hours.
-              </div>
+              <div>Message received. Expect a reply within 24 hours.</div>
             </div>
           )}
 
@@ -169,20 +141,10 @@ export default function Contact() {
             <a href="mailto:contact@logangarbacki.dev" data-testid="contact-email-link">
               contact@logangarbacki.dev
             </a>
-            <a
-              href="https://github.com/logangarbacki"
-              target="_blank"
-              rel="noreferrer"
-              data-testid="contact-github"
-            >
+            <a href="https://github.com/logangarbacki" target="_blank" rel="noreferrer" data-testid="contact-github">
               github.com/logangarbacki
             </a>
-            <a
-              href="https://linkedin.com/in/logangarbacki"
-              target="_blank"
-              rel="noreferrer"
-              data-testid="contact-linkedin"
-            >
+            <a href="https://linkedin.com/in/logangarbacki" target="_blank" rel="noreferrer" data-testid="contact-linkedin">
               linkedin.com/in/logangarbacki
             </a>
           </div>

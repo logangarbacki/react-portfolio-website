@@ -1,4 +1,20 @@
 node_modules
 dist
 .env
+.env.local
 .DS_Store
+
+# Claude Code / AI tooling — never commit
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.claude.json
+.mcp.json
+
+# Scratch / planning notes
+NOTES.md
+*.local.md
+
+# single-file static export
+dist-single
+portfolio-static.html
