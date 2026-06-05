@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './Hero.css';
 import { relTime, fmtDuration } from '../utils/format';
 
-const HERO_LABEL = 'qa automation · sdet · full-stack developer · long island, ny';
+const HERO_LABEL = 'sdet · full-stack · long island, ny';
 
 function useCountUp(target, run, duration = 1100) {
   const [val, setVal] = useState(0);
