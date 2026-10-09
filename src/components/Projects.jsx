@@ -4,8 +4,9 @@ import { useReveal } from '../hooks/useReveal.js';
 const PROJECTS = [
   {
     title: 'PrintScan Regression Framework',
-    status: 'QA Specialist · 2023',
-    stack: 'C# · Selenium WebDriver',
+    status: 'QA Specialist, 2023',
+    tone: 'muted',
+    stack: 'C#, Selenium WebDriver',
     desc: (
       <>
         A Selenium regression suite in C# that I helped build with a senior
@@ -18,7 +19,8 @@ const PROJECTS = [
   {
     title: 'PrintScan Location Search',
     status: 'In production',
-    stack: 'C# · .NET · Razor Pages',
+    tone: 'pass',
+    stack: 'C#, .NET, Razor Pages',
     desc: (
       <>
         The location search on printscan.com: a database-driven directory that
@@ -34,7 +36,8 @@ const PROJECTS = [
   {
     title: 'Selenium UI Test Framework',
     status: 'Live CI',
-    stack: 'C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions',
+    tone: 'accent',
+    stack: 'C#, NUnit, Selenium WebDriver 4, Allure, GitHub Actions',
     desc: (
       <>
         The test suite for this site: over 40 Selenium tests in C# and NUnit
@@ -52,7 +55,8 @@ const PROJECTS = [
   {
     title: 'Lead Generation Tool',
     status: 'Personal project',
-    stack: 'Next.js · TypeScript · Supabase · Google Places API · OpenRouter',
+    tone: 'muted',
+    stack: 'Next.js, TypeScript, Supabase, Google Places API, OpenRouter',
     desc: (
       <>
         A tool that finds local businesses with no website. It pulls listings
@@ -79,8 +83,7 @@ export default function Projects() {
           <h3 className="project-title" data-testid={`project-${i + 1}-title`}>{p.title}</h3>
           {/* The test suite finds the stack and description by class name. */}
           <p className="project-meta">
-            <span data-testid={`project-${i + 1}-status`}>{p.status}</span>
-            {' · '}
+            <span className={`project-status ${p.tone}`} data-testid={`project-${i + 1}-status`}>{p.status}</span>
             <span className="project-stack">{p.stack}</span>
           </p>
           <p className="project-desc">{p.desc}</p>
