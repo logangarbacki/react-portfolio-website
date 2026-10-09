@@ -23,11 +23,10 @@ export default function Hero({ run, allure, ready }) {
       </div>
 
       <p className="intro" data-testid="hero-summary">
-        Junior QA engineer and developer on Long Island. I write test
-        automation in C# and build web apps with React and .NET. This site is
-        tested by its own{' '}
+        I write test automation in C# and build web apps with React and .NET.
+        Every deploy of this site runs my{' '}
         <a href={FRAMEWORK_REPO_URL} target="_blank" rel="noreferrer">Selenium suite</a>{' '}
-        on every deploy; the latest result is below.
+        against it, and the latest result is below.
       </p>
 
       <p className="intro-links">

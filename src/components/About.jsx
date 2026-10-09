@@ -12,13 +12,13 @@ export default function About() {
         still on their site today.
       </p>
       <p className="reveal" data-testid="about-paragraph-2">
-        This site is also my test target. Every deploy to production kicks off
-        my Selenium suite, and the results are published as a public Allure
-        report. The numbers in the card above come straight from the latest run.
+        I treat this site like a production app. The Selenium suite covers every
+        section with smoke, regression, negative, and end-to-end tests, and each
+        run publishes a public Allure report with screenshots of any failures.
       </p>
       <p className="reveal" data-testid="about-paragraph-3">
         I'm looking for a junior QA or developer role on Long Island or in NYC,
-        on-site or hybrid.
+        on-site or hybrid, and I'm open to remote.
       </p>
     </section>
   );
