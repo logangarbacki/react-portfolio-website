@@ -1,30 +1,36 @@
-/* Type system:
-   - Zodiak (display serif)  -> headings only
-   - Hanken Grotesk (sans)   -> ALL body / prose
-   - IBM Plex Mono (mono)    -> code, CI card, commit hashes, tech tags, command labels ONLY */
-@import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-@import url('https://api.fontshare.com/v2/css?f[]=zodiak@400,500,600,700&display=swap');
-
+/* One typeface for everything: Inter, loaded in index.html.
+   Monospace is only used for the commit hash in the CI status line. */
 :root {
-  --bg: #14110b;
-  --paper: #1c1813;
-  --terminal: #0d0a06;
-  --ink: #ece5d6;
-  --ink-2: #c5bca9;
-  --muted: #8c8474;
-  --muted-2: #544f45;
-  --rule: #2a2620;
-  --rule-soft: #1f1c16;
-  --pass: #5fd388;
-  --pass-bg: #163a25;
-  --warn: #d8a04a;
-  --warn-bg: #3a2a10;
-  --fail: #e36b5e;
-  --accent: #23c9d6;
+  color-scheme: light dark;
 
-  --display: 'Zodiak', Georgia, 'Times New Roman', serif;
-  --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --bg: #fbfaf8;
+  --text: #1a1a1a;
+  --muted: #67645e;
+  --underline: #c4c0b8;
+  --field: #ffffff;
+  --field-border: #8f8b84;
+  --pass: #2f8a55;
+  --warn: #c08a2a;
+  --fail: #c4412f;
+  --off: #aaa69f;
+
+  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1b19;
+    --text: #e8e6e1;
+    --muted: #a29e97;
+    --underline: #5a5650;
+    --field: #22211f;
+    --field-border: #76726b;
+    --pass: #5bbf84;
+    --warn: #d9a648;
+    --fail: #e5735f;
+    --off: #6e6a64;
+  }
 }
 
 *, *::before, *::after {
@@ -33,80 +39,70 @@
   padding: 0;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
   background: var(--bg);
-  color: var(--ink-2);
+  color: var(--text);
   font-family: var(--sans);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.65;
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
-/* faint dot grid background */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: radial-gradient(circle, rgba(236, 229, 214, 0.03) 1px, transparent 1px);
-  background-size: 26px 26px;
-  pointer-events: none;
-  z-index: -2;
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--underline);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: text-decoration-color 0.15s ease, color 0.15s ease;
+}
+a:hover { text-decoration-color: currentColor; }
+
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
-::selection { background: var(--accent); color: var(--terminal); }
-
-a { color: inherit; text-decoration: none; }
-img { display: block; max-width: 100%; }
-code { font-family: var(--mono); }
-
-/* section headings */
-.section-head {
-  padding: 0 56px;
-  margin: 0 0 26px;
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
+/* Single centered column: 640px of content plus a 20px gutter on each side. */
+.page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
-.section-head .ix {
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--accent);
-  letter-spacing: 0.04em;
+
+.section {
+  margin-top: 96px;
+  scroll-margin-top: 40px;
 }
-.section-head h2 {
-  font-family: var(--display);
-  font-size: clamp(24px, 3.4vw, 32px);
+.section h2 {
+  font-size: 16px;
   font-weight: 600;
-  letter-spacing: -0.015em;
-  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 20px;
 }
+.section p + p { margin-top: 16px; }
 
 /* Scroll reveal: content is visible by default and only hidden when JS is
-   available to animate it back in. */
-html.js .reveal { opacity: 0; transform: translateY(16px); }
+   available to bring it back in. */
+html.js .reveal { opacity: 0; transform: translateY(6px); }
 html.js .reveal.in {
   opacity: 1;
   transform: none;
-  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.6, 0.2, 1);
-}
-
-@keyframes blink { 50% { opacity: 0; } }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(95,211,136,0.55); }
-  70%  { box-shadow: 0 0 0 7px rgba(95,211,136,0); }
-  100% { box-shadow: 0 0 0 0 rgba(95,211,136,0); }
+  transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   html.js .reveal { opacity: 1; transform: none; }
-  * { animation: none !important; }
 }
 
-@media (max-width: 920px) {
-  .section-head { padding: 0 24px; }
+@media (max-width: 600px) {
+  .section { margin-top: 72px; }
 }
