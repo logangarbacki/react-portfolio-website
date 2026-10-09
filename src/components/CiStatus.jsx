@@ -2,66 +2,87 @@ import './CiStatus.css';
 import { relTime, fmtDuration } from '../utils/format';
 import { ALLURE_URL } from '../hooks/useLiveStatus.js';
 
+// One square per test in the latest report, colored by result.
+function TestStrip({ allure }) {
+  if (!allure || !allure.total) return null;
+  const failed = (allure.failed || 0) + (allure.broken || 0);
+  const skipped = allure.skipped || 0;
+  const cells = [
+    ...Array(allure.passed || 0).fill('pass'),
+    ...Array(failed).fill('fail'),
+    ...Array(skipped).fill('skip'),
+  ];
+  const label = `${allure.passed} passed, ${failed} failed, ${skipped} skipped`;
+  return (
+    <div className="ci-strip" role="img" aria-label={label} data-testid="status-strip">
+      {cells.map((kind, i) => (
+        <span key={i} className={`ci-cell ${kind}`} style={{ '--i': i }} />
+      ))}
+    </div>
+  );
+}
+
 export default function CiStatus({ run, allure, ready }) {
   const passed = allure?.passed ?? 0;
   const failed = (allure?.failed ?? 0) + (allure?.broken ?? 0);
   const total = allure?.total ?? 0;
 
-  // Badge must agree with the data: never show PASSING when tests failed.
-  let badgeText = 'SYNCING';
+  // The status word must agree with the data: never "Passing" when tests failed.
+  let state = 'Checking';
   let tone = 'warn';
   if (ready) {
     if (!run) {
-      badgeText = 'OFFLINE';
+      state = 'Offline';
       tone = 'off';
     } else if (run.conclusion === 'success' && failed === 0) {
-      badgeText = 'PASSING';
+      state = 'Passing';
       tone = 'pass';
     } else if (failed > 0) {
-      badgeText = `${failed} KNOWN-FAIL`;
+      state = `${failed} known-fail`;
       tone = 'warn';
     } else if (run.conclusion === 'failure') {
-      badgeText = 'FAILING';
+      state = 'Failing';
       tone = 'fail';
     } else {
-      badgeText = (run.conclusion || run.status || 'pending').toUpperCase();
+      const raw = (run.conclusion || run.status || 'pending').replace(/_/g, ' ');
+      state = raw.charAt(0).toUpperCase() + raw.slice(1);
     }
   }
 
-  const commit = run?.commit || '—';
-
   return (
-    <p className={`ci-status ${tone}`} data-testid="status-card">
-      <span className="ci-items">
-        <span className="ci-item">
-          <span className="ci-dot" aria-hidden="true" />
-          <span className="ci-state" data-testid="status-card-badge">{badgeText}</span>
-        </span>
-        <span className="ci-item">
-          <span data-testid="metric-tests">{allure ? `${passed}/${total}` : '—'}</span> tests
-        </span>
-        <span className="ci-item">
-          last run <span data-testid="metric-last-run">{run ? relTime(run.startedAt) : '—'}</span>
-        </span>
-        <span className="ci-item">
-          <span data-testid="metric-conclusion">{run?.conclusion || run?.status || '—'}</span>
-          {run ? ' in ' : ' '}
-          <span data-testid="metric-duration">{run ? fmtDuration(run.durationSec) : '—'}</span>
-        </span>
-        <span className="ci-item">
-          commit{' '}
-          {run?.url ? (
-            <a href={run.url} target="_blank" rel="noreferrer" title="Open this run on GitHub Actions">
-              <span className="ci-hash" data-testid="metric-commit">{commit}</span>
-            </a>
+    <div className={`ci-status ${tone}`} data-testid="status-card">
+      <p className="ci-head">
+        <span className="ci-dot" aria-hidden="true" />
+        <span className="ci-state" data-testid="status-card-badge">{state}</span>
+        <span className="ci-count">
+          {allure ? (
+            <>
+              <span data-testid="metric-tests">{passed} of {total}</span> tests passed in the latest report
+            </>
           ) : (
-            <span className="ci-hash" data-testid="metric-commit">{commit}</span>
+            'Test results unavailable'
           )}
         </span>
-        <span className="ci-item">
-          <a href={ALLURE_URL} target="_blank" rel="noreferrer">Allure report</a>
-        </span>
-      </span>
-    </p>
+      </p>
+      <TestStrip allure={allure} />
+      {run ? (
+        <p className="ci-meta">
+          Last run <span data-testid="metric-last-run">{relTime(run.startedAt)}</span>
+          {', took '}
+          <span data-testid="metric-duration">{fmtDuration(run.durationSec)}</span>
+          {', commit '}
+          <a href={run.url} target="_blank" rel="noreferrer">
+            <span className="ci-hash" data-testid="metric-commit">{run.commit}</span>
+          </a>
+          {'. '}
+          <a href={ALLURE_URL} target="_blank" rel="noreferrer">Open the Allure report</a>
+        </p>
+      ) : (
+        <p className="ci-meta">
+          {ready ? "Couldn't load the latest run from GitHub. " : 'Loading the latest run. '}
+          <a href={ALLURE_URL} target="_blank" rel="noreferrer">Open the Allure report</a>
+        </p>
+      )}
+    </div>
   );
 }
