@@ -15,20 +15,23 @@
   gap: 6px;
 }
 .form-row label {
-  font-size: 15px;
-  font-weight: 500;
+  font-family: var(--hand);
+  font-size: 24px;
+  line-height: 1.1;
+  color: var(--pen);
 }
 .form-row input,
 .form-row textarea {
   width: 100%;
   font: inherit;
-  font-size: 16px;
+  font-size: 19px;
   line-height: 1.5;
   color: var(--text);
-  background: var(--field);
-  border: 1px solid var(--field-border);
-  border-radius: 6px;
-  padding: 9px 12px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px solid var(--line);
+  border-radius: 0;
+  padding: 6px 2px;
 }
 .form-row textarea {
   resize: vertical;
@@ -41,25 +44,24 @@
 }
 .form-row input:focus-visible,
 .form-row textarea:focus-visible {
-  border-color: var(--text);
-  outline-offset: 1px;
+  border-color: var(--pen);
+  outline: none;
 }
 
 .submit {
   justify-self: start;
   font: inherit;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 19px;
   color: var(--text);
   background: transparent;
-  border: 1px solid var(--text);
-  border-radius: 6px;
-  padding: 8px 18px;
+  border: 1.5px solid var(--pen);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  padding: 6px 22px;
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 .submit:hover:not(:disabled) {
-  background: var(--text);
+  background: var(--pen);
   color: var(--bg);
 }
 .submit:disabled {
@@ -69,7 +71,7 @@
 
 .form-error {
   font-size: 15px;
-  color: var(--fail);
+  color: var(--red);
 }
 
 .form-success { margin-top: 40px; }
