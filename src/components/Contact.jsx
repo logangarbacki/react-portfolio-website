@@ -19,15 +19,6 @@ export default function Contact() {
   const [successText, setSuccessText] = useState('');
   const [error, setError] = useState(null);
 
-  function typeSuccess(text) {
-    let i = 0;
-    const typer = setInterval(() => {
-      i++;
-      setSuccessText(text.slice(0, i));
-      if (i >= text.length) clearInterval(typer);
-    }, 30);
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
     if (submitting) return;
@@ -45,7 +36,7 @@ export default function Contact() {
       await sleep(700);
       setSubmitting(false);
       setSuccess(true);
-      typeSuccess('POST /contact → 200 ok');
+      setSuccessText('POST /contact → 200 ok');
       return;
     }
 
@@ -64,7 +55,7 @@ export default function Contact() {
       }
 
       setSuccess(true);
-      typeSuccess(`POST /contact → ${res.status} ok`);
+      setSuccessText(`POST /contact → ${res.status} ok`);
     } catch (err) {
       setError(err.message || 'Send failed. Email contact@logangarbacki.dev directly.');
     } finally {
@@ -89,9 +80,8 @@ export default function Contact() {
             <span className="badge">open to work</span>
           </div>
           <div className="contact-blurb">
-            I'm looking for a full-time QA Automation, SDET, or software
-            engineering role — around NYC / Long Island or remote. Send a note and
-            I'll read it myself.
+            I'm looking for a full-time junior QA or developer role on Long
+            Island, in NYC, or remote. Send a note and I'll reply myself.
           </div>
 
           {!success && (
@@ -133,7 +123,7 @@ export default function Contact() {
               <div className="ok-line mono">
                 <span className="prefix">[200]</span> {successText}
               </div>
-              <div>Message received. Expect a reply within 24 hours.</div>
+              <div>Message received. I'll get back to you soon.</div>
             </div>
           )}
 
