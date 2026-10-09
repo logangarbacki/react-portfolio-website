@@ -1,56 +1,79 @@
-.hero { padding-top: 104px; }
+.hero { padding-top: 40px; }
+.masthead { position: relative; }
 
-/* Name and role on the left, section links on the right. The links drop
-   below the role line when there isn't room for both. */
-.masthead {
+.nav-links {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px 32px;
+  justify-content: flex-end;
+  gap: 22px;
+  font-style: italic;
+  font-size: 18px;
+}
+.nav-links a { color: var(--muted); text-decoration-color: transparent; }
+.nav-links a:hover { color: var(--text); text-decoration-color: currentColor; }
+
+.id {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 36px;
+  align-items: center;
+}
+
+/* Photo taped into the notebook. */
+.polaroid {
+  position: relative;
+  width: 150px;
+  padding: 8px 8px 26px;
+  background: var(--polaroid);
+  transform: rotate(-3deg);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+.polaroid img { display: block; width: 134px; height: 134px; object-fit: cover; }
+.polaroid::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 40px;
+  width: 72px;
+  height: 24px;
+  background: var(--tape);
+  transform: rotate(4deg);
 }
 
 .name {
-  font-size: 34px;
+  font-size: 58px;
+  line-height: 1.02;
   font-weight: 600;
-  line-height: 1.2;
   letter-spacing: -0.02em;
+  font-variation-settings: 'opsz' 72;
 }
-
 .role {
-  margin-top: 6px;
+  margin-top: 8px;
+  font-style: italic;
+  font-size: 21px;
   color: var(--muted);
 }
 .role .nowrap { white-space: nowrap; }
 
-.nav-links {
-  display: flex;
-  gap: 20px;
-  font-size: 15px;
-}
-.nav-links a {
-  color: var(--muted);
-  text-decoration-color: transparent;
-}
-.nav-links a:hover {
+.intro { margin-top: 52px; font-size: 22px; }
+.intro a {
   color: var(--text);
-  text-decoration-color: currentColor;
+  text-decoration-color: var(--pen);
+  text-decoration-thickness: 2px;
 }
-
-.intro { margin-top: 48px; }
 
 .intro-links {
-  margin-top: 16px;
+  margin-top: 18px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 24px;
+  gap: 4px 28px;
 }
-.intro-links a { font-weight: 500; }
-.intro a { color: var(--text); text-decoration-color: var(--underline); }
-.intro a:hover { color: var(--accent); text-decoration-color: currentColor; }
 
-@media (max-width: 600px) {
-  .hero { padding-top: 56px; }
-  .name { font-size: 32px; }
-  .intro { margin-top: 36px; }
+.ci-wrap { position: relative; margin-top: 40px; }
+
+@media (max-width: 640px) {
+  .id { grid-template-columns: 1fr; gap: 28px; margin-top: 36px; }
+  .name { font-size: 44px; }
+  .intro { margin-top: 36px; font-size: 20px; }
+  .nav-links { justify-content: flex-start; }
 }
