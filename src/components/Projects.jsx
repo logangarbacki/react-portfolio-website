@@ -37,7 +37,7 @@ const PROJECTS = [
     stack: 'C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions',
     desc: (
       <>
-        The test suite for this site: nearly 50 Selenium tests in C# and NUnit
+        The test suite for this site: over 40 Selenium tests in C# and NUnit
         using the Page Object Model, run against production by GitHub Actions
         on every deploy and nightly, with a public Allure report. Two problems
         I had to solve: elements that only render once they're scrolled into
