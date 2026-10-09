@@ -1,0 +1,24 @@
+.note {
+  display: block;
+  font-family: var(--hand);
+  font-size: 25px;
+  line-height: 1.1;
+  color: var(--pen);
+  transform: rotate(var(--tilt));
+  margin: 4px 0 16px;
+}
+.note-red { color: var(--red); }
+.note-desktop { display: none; }
+
+@media (min-width: 1200px) {
+  .note,
+  .note-desktop {
+    display: block;
+    position: absolute;
+    top: var(--top);
+    width: 190px;
+    margin: 0;
+  }
+  .note-left { right: calc(100% + 36px); text-align: right; }
+  .note-right { left: calc(100% + 36px); }
+}
