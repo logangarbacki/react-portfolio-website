@@ -1,80 +1,28 @@
-# React Portfolio — Logan Garbacki
+# logangarbacki.dev
 
-I’m a QA Automation Engineer — this portfolio doubles as both a frontend project and the system under test for my automation framework.
+My portfolio site, built with React and Vite. It's also the system under test for my Selenium framework, [react-portfolio-selenium-tests](https://github.com/logangarbacki/react-portfolio-selenium-tests).
 
-👉 https://logangarbacki.dev  
+Live site: https://logangarbacki.dev
 
----
+## How the two repos work together
 
-## ⚙️ Real problems solved
+- A push to `main` here triggers the Selenium suite in the test repo through a `repository_dispatch` event.
+- The suite runs against the production site and publishes an Allure report to GitHub Pages.
+- The CI card on the homepage reads the latest workflow run from the GitHub API and the test totals from the Allure summary, so it shows the real result of the last run.
 
-### Scroll-based animations (IntersectionObserver)
-Sections animate into view as the user scrolls. This improves UX, but introduces timing challenges and rendering edge cases.
+## Built to be tested
 
-**Solution:** Components are structured to ensure animations trigger reliably across screen sizes and do not block layout or interaction.
+- Every element the tests touch has a `data-testid`.
+- Sections fade in on scroll using IntersectionObserver. Content is visible by default and only hidden when JavaScript is available to bring it back, so crawlers and screenshots never see empty sections.
+- The contact form has a test mode (`?test-form=1`) so the suite can run the full submit flow without sending real messages.
 
----
-
-### Performance + Vite optimization
-Fast load time is critical for first impressions.
-
-**Solution:** Built with **Vite** for fast development and optimized production builds, reducing bundle size and improving load speed.
-
----
-
-### Responsive layout across devices
-Portfolio content needs to remain readable and visually consistent on all screen sizes.
-
-**Solution:** Mobile-first layout with flexible CSS and breakpoints to ensure consistent spacing, alignment, and usability.
-
----
-
-### UI consistency + maintainability
-As the site grows, keeping styles and components consistent becomes harder.
-
-**Solution:** Reusable React components with clear separation between layout, logic, and styling.
-
----
-
-## 🧪 What this site demonstrates
-
-This isn’t just a portfolio — it reflects how I build software:
-
-- Clean, maintainable component structure  
-- Strong attention to UX (animations, navigation flow)  
-- Performance awareness  
-- Real-world testability (paired with automation)
-
----
-
-## 🧱 Stack
-
-- **React + Vite** — component-based UI and fast tooling  
-- **JavaScript (ES6+)** — application logic  
-- **HTML5 + CSS3** — structure and styling  
-- **Git + GitHub** — version control and deployment  
-
----
-
-## 🚀 Deployment
-
-Deployed as a static frontend application with continuous updates via GitHub.
-
-Paired with an automated Selenium test suite to validate core functionality after changes.
-
----
-## Project Structure
+## Run it locally
 
 ```
-portfolio/
-├── .github/
-│   └── workflows/      # GitHub Actions CI/CD
-├── public/             # Static assets (images, favicon, icons)
-├── src/                # React components and main code
-├── .gitignore          # Git ignore rules
-├── README.md           # Project documentation
-├── index.html          # Root HTML file
-├── package-lock.json   # Exact dependency versions
-├── package.json        # Dependencies and scripts
-└── vite.config.js      # Vite configuration
+npm install
+npm run dev
 ```
+
+## Stack
+
+React 18, Vite 5, plain CSS. The contact form posts to Formspree.
