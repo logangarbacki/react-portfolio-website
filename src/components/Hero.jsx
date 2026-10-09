@@ -12,7 +12,7 @@ export default function Hero({ run, allure, ready }) {
             <span data-testid="nav-name">Logan Garbacki</span>
           </h1>
           <p className="role" data-testid="hero-label">
-            Junior QA engineer and developer&nbsp;· <span className="nowrap">Long Island, NY</span>
+            Junior QA engineer and developer, <span className="nowrap">Long Island, NY</span>
           </p>
         </div>
         <nav className="nav-links" data-testid="nav-links" aria-label="Sections">
