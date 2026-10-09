@@ -45,7 +45,7 @@ export default function CiStatus({ run, allure, ready }) {
         </span>
         <span className="ci-item">
           <span data-testid="metric-conclusion">{run?.conclusion || run?.status || '—'}</span>
-          {' in '}
+          {run ? ' in ' : ' '}
           <span data-testid="metric-duration">{run ? fmtDuration(run.durationSec) : '—'}</span>
         </span>
         <span className="ci-item">

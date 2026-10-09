@@ -71,8 +71,8 @@ export default function Contact() {
     <section className="section" id="contact" data-testid="contact">
       <h2>Contact</h2>
       <p>
-        I'm looking for a full-time junior QA or developer role on Long
-        Island, in NYC, or remote. Send a note and I'll reply myself.
+        Email is the fastest way to reach me, or send a note here and I'll
+        reply myself.
       </p>
       <p className="contact-links">
         <a href="mailto:contact@logangarbacki.dev" data-testid="contact-email-link">
