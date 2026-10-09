@@ -6,10 +6,9 @@ export default function About() {
     <section ref={ref} className="section" id="about" data-testid="about">
       <h2>About</h2>
       <p className="reveal" data-testid="about-paragraph-1">
-        I'm a QA engineer and developer from Hicksville, on Long Island. I
-        started out in QA at PrintScan, where I tested releases, helped build
-        their test automation in C#, and built the location search that's
-        still on their site today.
+        I'm a QA engineer and developer from Hicksville, on Long Island. At
+        PrintScan I tested releases, helped build their test automation in C#,
+        and built the location search that's still on their site today.
       </p>
       <p className="reveal" data-testid="about-paragraph-2">
         I treat this site like a production app. The Selenium suite covers every
