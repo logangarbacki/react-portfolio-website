@@ -8,16 +8,15 @@ const PROJECTS = [
     status: 'QA Specialist · 2023',
     statusKind: 'role',
     tail: 'PrintScan Fingerprinting',
-    stack: 'C# · NUnit · Selenium WebDriver · Page Object Model',
+    stack: 'C# · Selenium WebDriver',
     desc: (
       <>
-        An end-to-end Selenium regression suite for PrintScan's biometric
-        fingerprint-enrollment platform — covering the real enrollment and search
-        flows in C# with NUnit and a Page Object Model. My first automation
-        framework against a real production platform.
+        A Selenium regression suite in C# that I helped build with a senior
+        developer for PrintScan's web platform. It cut the manual testing
+        needed each sprint by over 40%.
       </>
     ),
-    tags: ['regression', 'e2e', 'POM'],
+    tags: ['regression', 'automation'],
     note: 'proprietary',
   },
   {
@@ -26,15 +25,13 @@ const PROJECTS = [
     status: 'in production',
     statusKind: 'pass',
     tail: 'PrintScan Fingerprinting',
-    // C# confirmed by Logan; "multi-view" read as ASP.NET MVC (Razor views) — confirm exact framework
-    stack: 'C# · ASP.NET MVC',
+    stack: 'C# · .NET · Razor Pages',
     desc: (
       <>
-        A location-search system and programmatic location-page architecture I
-        built for printscan.com to drive local SEO — surfacing nearby enrollment
-        sites. Server-rendered in ASP.NET MVC, still live in production after First
-        Advantage acquired the company. I later reused this architecture as the SEO
-        backbone for Garbacki Digital's client sites.
+        The location search on printscan.com: a database-driven directory that
+        generates a page for every PrintScan location, built to improve site
+        navigation and local SEO. It's still live after First Advantage
+        acquired the company.
       </>
     ),
     tags: ['full-stack', 'SEO', 'production'],
@@ -45,17 +42,17 @@ const PROJECTS = [
   {
     num: '03',
     suite: 'Selenium UI Test Framework',
-    status: 'passing',
-    statusKind: 'pass',
-    tail: 'cross-repo CI',
+    status: 'live CI',
+    statusKind: 'role',
+    tail: 'tests this site',
     stack: 'C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions',
     desc: (
       <>
-        The suite testing <em>this very page</em>. A Page Object Model framework
-        I wrote solo against a live React/Vite SPA — scroll-into-view waits for
-        IntersectionObserver-deferred elements, and a JS innerText fallback for
-        CSS-animated hero text that <code>.Text</code> returned empty for. Allure
-        reports auto-deploy; cross-repo dispatch keeps it locked to production.
+        The test suite for this site: nearly 50 Selenium tests in C# and NUnit
+        using the Page Object Model, run against production by GitHub Actions
+        on every deploy and nightly, with a public Allure report. Two problems
+        I had to solve: elements that only render once they're scrolled into
+        view, and animated hero text that Selenium read as empty.
       </>
     ),
     tags: ['smoke', 'regression', 'e2e', 'parallel'],
@@ -67,21 +64,20 @@ const PROJECTS = [
   {
     num: '04',
     suite: 'Lead Generation Tool',
-    status: 'live',
-    statusKind: 'pass',
-    tail: 'garbacki digital',
-    stack: 'Next.js · TypeScript · Supabase · Google Places · OpenRouter',
+    status: 'personal project',
+    statusKind: 'role',
+    tail: '2026',
+    stack: 'Next.js · TypeScript · Supabase · Google Places API · OpenRouter',
     desc: (
       <>
-        Finds local businesses with weak web presence, stores them in Supabase
-        with row-level security, and uses LLMs (routed through OpenRouter) to
-        draft the outreach. Live.
+        A tool that finds local businesses with no website. It pulls listings
+        from the Google Places API, filters out businesses that already have a
+        site, ranks the rest by reviews and rating, and uses an LLM to draft
+        outreach.
       </>
     ),
-    tags: ['full-stack TS', 'RLS', 'LLM', 'serverless'],
-    links: [
-      { href: 'https://garbackidigital.com/platform', label: 'live →', testid: 'project-4-live' },
-    ],
+    tags: ['full-stack', 'APIs', 'LLM'],
+    note: 'private repo',
   },
 ];
 
