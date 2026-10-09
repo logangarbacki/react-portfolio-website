@@ -68,78 +68,59 @@ export default function Contact() {
   }
 
   return (
-    <>
-      <div className="section-head">
-        <span className="ix">03</span>
-        <h2>Get in touch</h2>
-      </div>
-      <section className="contact" id="contact" data-testid="contact">
-        <div className="contact-card">
-          <div className="contact-card-head">
-            <span>contact</span>
-            <span className="badge">open to work</span>
-          </div>
-          <div className="contact-blurb">
-            I'm looking for a full-time junior QA or developer role on Long
-            Island, in NYC, or remote. Send a note and I'll reply myself.
-          </div>
+    <section className="section" id="contact" data-testid="contact">
+      <h2>Contact</h2>
+      <p>
+        I'm looking for a full-time junior QA or developer role on Long
+        Island, in NYC, or remote. Send a note and I'll reply myself.
+      </p>
+      <p className="contact-links">
+        <a href="mailto:contact@logangarbacki.dev" data-testid="contact-email-link">
+          contact@logangarbacki.dev
+        </a>
+        <a href="https://github.com/logangarbacki" target="_blank" rel="noreferrer" data-testid="contact-github">
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/logangarbacki" target="_blank" rel="noreferrer" data-testid="contact-linkedin">
+          LinkedIn
+        </a>
+      </p>
 
-          {!success && (
-            <form
-              className="contact-form"
-              onSubmit={handleSubmit}
-              onKeyDown={handleKey}
-              noValidate
-              data-testid="contact-form"
-            >
-              <div className="form-row">
-                <label className="form-label" htmlFor="cf-name">Name</label>
-                <input id="cf-name" type="text" name="name" placeholder="Your name" required data-testid="contact-name" />
-              </div>
-              <div className="form-row">
-                <label className="form-label" htmlFor="cf-email">Email</label>
-                <input id="cf-email" type="email" name="email" placeholder="Where to reply" required data-testid="contact-email" />
-              </div>
-              <div className="form-row">
-                <label className="form-label" htmlFor="cf-message">Message</label>
-                <textarea id="cf-message" name="message" rows="4" placeholder="What's on your mind?" required data-testid="contact-message" />
-              </div>
-              <div className="form-actions">
-                <button type="submit" className="submit" disabled={submitting} data-testid="contact-submit">
-                  {submitting ? 'Sending…' : 'Send message'}
-                </button>
-                <span className="hint">enter to submit · esc to clear</span>
-              </div>
-              {error && (
-                <div className="form-error" data-testid="contact-error">
-                  <span className="prefix">[err]</span> {error}
-                </div>
-              )}
-            </form>
+      {!success && (
+        <form
+          className="contact-form"
+          onSubmit={handleSubmit}
+          onKeyDown={handleKey}
+          noValidate
+          data-testid="contact-form"
+        >
+          <div className="form-row">
+            <label htmlFor="cf-name">Name</label>
+            <input id="cf-name" type="text" name="name" placeholder="Your name" required data-testid="contact-name" />
+          </div>
+          <div className="form-row">
+            <label htmlFor="cf-email">Email</label>
+            <input id="cf-email" type="email" name="email" placeholder="Where to reply" required data-testid="contact-email" />
+          </div>
+          <div className="form-row">
+            <label htmlFor="cf-message">Message</label>
+            <textarea id="cf-message" name="message" rows="5" placeholder="What's on your mind?" required data-testid="contact-message" />
+          </div>
+          <button type="submit" className="submit" disabled={submitting} data-testid="contact-submit">
+            {submitting ? 'Sending…' : 'Send message'}
+          </button>
+          {error && (
+            <p className="form-error" data-testid="contact-error">[err] {error}</p>
           )}
+        </form>
+      )}
 
-          {success && (
-            <div className="form-success" data-testid="contact-success">
-              <div className="ok-line mono">
-                <span className="prefix">[200]</span> {successText}
-              </div>
-              <div>Message received. I'll get back to you soon.</div>
-            </div>
-          )}
-
-          <div className="contact-meta">
-            <a href="mailto:contact@logangarbacki.dev" data-testid="contact-email-link">
-              contact@logangarbacki.dev
-            </a>
-            <a href="https://github.com/logangarbacki" target="_blank" rel="noreferrer" data-testid="contact-github">
-              github.com/logangarbacki
-            </a>
-            <a href="https://linkedin.com/in/logangarbacki" target="_blank" rel="noreferrer" data-testid="contact-linkedin">
-              linkedin.com/in/logangarbacki
-            </a>
-          </div>
+      {success && (
+        <div className="form-success" data-testid="contact-success">
+          <p className="ok-line">[200] {successText}</p>
+          <p>Message received. I'll get back to you soon.</p>
         </div>
-      </section>
-    </>
+      )}
+    </section>
   );
 }
