@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 const REPO = 'logangarbacki/react-portfolio-selenium-tests';
+const WORKFLOW = 'ui-tests.yml';
 const ALLURE_BASE = 'https://logangarbacki.github.io/react-portfolio-selenium-tests';
 
 export function useLiveStatus() {
@@ -14,7 +15,9 @@ export function useLiveStatus() {
     async function fetchRun() {
       try {
         const res = await fetch(
-          `https://api.github.com/repos/${REPO}/actions/runs?per_page=1`,
+          // Latest finished run of the test workflow only. Without these filters the
+          // card could pick up the Pages deploy, or the run that is testing it right now.
+          `https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/runs?status=completed&per_page=1`,
           { cache: 'no-store' }
         );
         if (!res.ok) return null;
