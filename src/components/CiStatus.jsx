@@ -2,7 +2,8 @@ import './CiStatus.css';
 import { relTime, fmtDuration } from '../utils/format';
 import { ALLURE_URL } from '../hooks/useLiveStatus.js';
 
-// One square per test in the latest report, colored by result.
+// One pen mark per test in the latest report: a check for each pass, a cross
+// for each failure, a dash for each skip.
 function TestStrip({ allure }) {
   if (!allure || !allure.total) return null;
   const failed = (allure.failed || 0) + (allure.broken || 0);
@@ -16,7 +17,11 @@ function TestStrip({ allure }) {
   return (
     <div className="ci-strip" role="img" aria-label={label} data-testid="status-strip">
       {cells.map((kind, i) => (
-        <span key={i} className={`ci-cell ${kind}`} style={{ '--i': i }} />
+        <svg key={i} className={`ci-cell ${kind}`} style={{ '--i': i }} viewBox="0 0 16 16" aria-hidden="true">
+          {kind === 'pass' && <path d="M2.5 8.8c1.6 1 2.7 2.3 3.6 3.9C8 8.6 10.5 5.5 13.8 3.2" />}
+          {kind === 'fail' && <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" />}
+          {kind === 'skip' && <path d="M3.5 8h9" />}
+        </svg>
       ))}
     </div>
   );
