@@ -1,0 +1,16 @@
+.skills { display: grid; gap: 12px; }
+
+.skills-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 2px 20px;
+}
+.skills-row dt {
+  font-weight: 600;
+  color: var(--accent);
+}
+.skills-row dd { margin: 0; }
+
+@media (max-width: 600px) {
+  .skills-row { grid-template-columns: 1fr; }
+}
