@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './Hero.css';
 import { relTime, fmtDuration } from '../utils/format';
 
-const HERO_LABEL = 'sdet · full-stack · long island, ny';
+const HERO_LABEL = 'junior qa engineer · developer · long island, ny';
 
 function useCountUp(target, run, duration = 1100) {
   const [val, setVal] = useState(0);
@@ -54,10 +54,10 @@ export default function Hero({ run, allure, ready }) {
         <div className="hero-label" data-testid="hero-label">{HERO_LABEL}</div>
         <h1 className="hero-name" data-testid="hero-name">Logan Garbacki.</h1>
         <p className="hero-summary" data-testid="hero-summary">
-          QA Automation Engineer and developer on Long Island. I build the test
-          frameworks that catch what humans miss — and the apps they run against.
-          This page ships with its own <span className="accent">Selenium suite</span>{' '}
-          that runs on every deploy; the card to the right is its live result.
+          Junior QA engineer and developer on Long Island. I write test
+          automation in C# and build web apps with React and .NET. This site is
+          tested by its own <span className="accent">Selenium suite</span> on
+          every deploy, and the card on the right shows the latest run.
         </p>
         <div className="hero-actions">
           <a className="cmd" href="#projects" data-testid="hero-cta-projects">
