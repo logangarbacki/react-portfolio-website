@@ -1,13 +1,10 @@
-import { useEffect, useRef } from 'react';
 import './Projects.css';
+import { useReveal } from '../hooks/useReveal.js';
 
 const PROJECTS = [
   {
-    num: '01',
-    suite: 'PrintScan Regression Framework',
+    title: 'PrintScan Regression Framework',
     status: 'QA Specialist · 2023',
-    statusKind: 'role',
-    tail: 'PrintScan Fingerprinting',
     stack: 'C# · Selenium WebDriver',
     desc: (
       <>
@@ -16,15 +13,11 @@ const PROJECTS = [
         needed each sprint by over 40%.
       </>
     ),
-    tags: ['regression', 'automation'],
-    note: 'proprietary',
+    note: 'Proprietary',
   },
   {
-    num: '02',
-    suite: 'PrintScan Location Search',
-    status: 'in production',
-    statusKind: 'pass',
-    tail: 'PrintScan Fingerprinting',
+    title: 'PrintScan Location Search',
+    status: 'In production',
     stack: 'C# · .NET · Razor Pages',
     desc: (
       <>
@@ -34,17 +27,13 @@ const PROJECTS = [
         acquired the company.
       </>
     ),
-    tags: ['full-stack', 'SEO', 'production'],
     links: [
-      { href: 'https://printscan.com/Locations/Search', label: 'see it live →', testid: 'project-2-live' },
+      { href: 'https://printscan.com/Locations/Search', label: 'See it live', testid: 'project-2-live' },
     ],
   },
   {
-    num: '03',
-    suite: 'Selenium UI Test Framework',
-    status: 'live CI',
-    statusKind: 'role',
-    tail: 'tests this site',
+    title: 'Selenium UI Test Framework',
+    status: 'Live CI',
     stack: 'C# · NUnit · Selenium WebDriver 4 · Allure · GitHub Actions',
     desc: (
       <>
@@ -55,18 +44,14 @@ const PROJECTS = [
         view, and animated hero text that Selenium read as empty.
       </>
     ),
-    tags: ['smoke', 'regression', 'e2e', 'parallel'],
     links: [
-      { href: 'https://github.com/logangarbacki/react-portfolio-selenium-tests', label: 'github →', testid: 'project-3-github' },
-      { href: 'https://logangarbacki.github.io/react-portfolio-selenium-tests/', label: 'allure →', testid: 'project-3-allure' },
+      { href: 'https://github.com/logangarbacki/react-portfolio-selenium-tests', label: 'GitHub', testid: 'project-3-github' },
+      { href: 'https://logangarbacki.github.io/react-portfolio-selenium-tests/', label: 'Allure report', testid: 'project-3-allure' },
     ],
   },
   {
-    num: '04',
-    suite: 'Lead Generation Tool',
-    status: 'personal project',
-    statusKind: 'role',
-    tail: '2026',
+    title: 'Lead Generation Tool',
+    status: 'Personal project',
     stack: 'Next.js · TypeScript · Supabase · Google Places API · OpenRouter',
     desc: (
       <>
@@ -76,84 +61,42 @@ const PROJECTS = [
         outreach.
       </>
     ),
-    tags: ['full-stack', 'APIs', 'LLM'],
-    note: 'private repo',
+    note: 'Private repo',
   },
 ];
 
-function useReveal() {
-  const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const items = el.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
-      items.forEach((n) => n.classList.add('in'));
-      return;
-    }
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); }
-      });
-    }, { threshold: 0.1 });
-    items.forEach((n) => obs.observe(n));
-    const t = setTimeout(() => items.forEach((n) => n.classList.add('in')), 1200);
-    return () => { obs.disconnect(); clearTimeout(t); };
-  }, []);
-  return ref;
-}
-
 export default function Projects() {
-  const ref = useReveal();
+  const ref = useReveal(0.1);
   return (
-    <>
-      <div className="section-head">
-        <span className="ix">02</span>
-        <h2>Selected work</h2>
-      </div>
-      <section ref={ref} className="projects" id="projects" data-testid="projects">
-        {PROJECTS.map((p, i) => (
-          <article
-            key={p.num}
-            className="project-card reveal"
-            data-testid={`project-card-${i + 1}`}
-          >
-            <div className="project-head">
-              <span className="project-num">{p.num} /</span>
-              <span className="project-suite" data-testid={`project-${i + 1}-title`}>{p.suite}</span>
-              <span
-                className={`project-status ${p.statusKind}`}
-                data-testid={`project-${i + 1}-status`}
-              >
-                {p.status}
-              </span>
-              <span className="project-tail">{p.tail}</span>
-            </div>
-            <div className="project-body">
-              {p.stack && <div className="project-stack">{p.stack}</div>}
-              <p className="project-desc">{p.desc}</p>
-              <div className="project-foot">
-                <div className="tag-row">
-                  {p.tags.map((t) => (
-                    <span className="tag" key={t}>{t}</span>
-                  ))}
-                </div>
-                <div className="link-row">
-                  {p.links ? (
-                    p.links.map((l) => (
-                      <a key={l.label} href={l.href} target="_blank" rel="noreferrer" data-testid={l.testid}>
-                        {l.label}
-                      </a>
-                    ))
-                  ) : (
-                    <span className="tag tag-pending">{p.note}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </article>
-        ))}
-      </section>
-    </>
+    <section ref={ref} className="section" id="projects" data-testid="projects">
+      <h2>Work</h2>
+      {PROJECTS.map((p, i) => (
+        <article
+          key={p.title}
+          className="project reveal"
+          data-testid={`project-card-${i + 1}`}
+        >
+          <h3 className="project-title" data-testid={`project-${i + 1}-title`}>{p.title}</h3>
+          {/* The test suite finds the stack and description by class name. */}
+          <p className="project-meta">
+            <span data-testid={`project-${i + 1}-status`}>{p.status}</span>
+            {' · '}
+            <span className="project-stack">{p.stack}</span>
+          </p>
+          <p className="project-desc">{p.desc}</p>
+          {p.links ? (
+            <p className="link-row">
+              {p.links.map((l) => (
+                <a key={l.label} href={l.href} target="_blank" rel="noreferrer" data-testid={l.testid}>
+                  {l.label}
+                </a>
+              ))}
+            </p>
+          ) : (
+            <p className="project-note">{p.note}</p>
+          )}
+        </article>
+      ))}
+    </section>
   );
 }
