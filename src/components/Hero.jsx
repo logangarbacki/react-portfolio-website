@@ -1,125 +1,41 @@
-import { useEffect, useState } from 'react';
 import './Hero.css';
-import { relTime, fmtDuration } from '../utils/format';
-
-const HERO_LABEL = 'junior qa engineer · developer · long island, ny';
-
-function useCountUp(target, run, duration = 1100) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (!run) { setVal(0); return; }
-    const start = performance.now();
-    let raf = 0;
-    const tick = (now) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setVal(Math.round(eased * target));
-      if (t < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [target, run, duration]);
-  return val;
-}
+import CiStatus from './CiStatus.jsx';
+import { FRAMEWORK_REPO_URL } from '../hooks/useLiveStatus.js';
 
 export default function Hero({ run, allure, ready }) {
-  const passed = allure?.passed ?? 0;
-  const failed = (allure?.failed ?? 0) + (allure?.broken ?? 0);
-  const total = allure?.total ?? 0;
-  const testsCount = useCountUp(passed, !!allure);
-
-  // Badge must agree with the data: never show green PASSING when tests failed.
-  let badgeText = 'SYNCING';
-  let badgeClass = 'pending';
-  if (ready) {
-    if (!run) {
-      badgeText = 'OFFLINE';
-    } else if (run.conclusion === 'success' && failed === 0) {
-      badgeText = 'PASSING';
-      badgeClass = '';
-    } else if (failed > 0) {
-      badgeText = `${failed} KNOWN-FAIL`;
-      badgeClass = 'pending';
-    } else if (run.conclusion === 'failure') {
-      badgeText = 'FAILING';
-      badgeClass = 'fail';
-    } else {
-      badgeText = (run.conclusion || run.status || 'pending').toUpperCase();
-    }
-  }
-
   return (
-    <section className="hero" data-testid="hero">
-      <div className="hero-left">
-        <div className="hero-label" data-testid="hero-label">{HERO_LABEL}</div>
-        <h1 className="hero-name" data-testid="hero-name">Logan Garbacki.</h1>
-        <p className="hero-summary" data-testid="hero-summary">
-          Junior QA engineer and developer on Long Island. I write test
-          automation in C# and build web apps with React and .NET. This site is
-          tested by its own <span className="accent">Selenium suite</span> on
-          every deploy, and the card on the right shows the latest run.
-        </p>
-        <div className="hero-actions">
-          <a className="cmd" href="#projects" data-testid="hero-cta-projects">
-            View work
-          </a>
-          <a className="cmd ghost" href="#contact" data-testid="hero-cta-contact">
-            Get in touch
-          </a>
+    <header className="hero" data-testid="hero">
+      <div className="masthead" data-testid="nav">
+        <div>
+          {/* The suite checks the name as both the nav name and the hero name. */}
+          <h1 className="name" data-testid="hero-name">
+            <span data-testid="nav-name">Logan Garbacki</span>
+          </h1>
+          <p className="role" data-testid="hero-label">
+            Junior QA engineer and developer · <span className="nowrap">Long Island, NY</span>
+          </p>
         </div>
+        <nav className="nav-links" data-testid="nav-links" aria-label="Sections">
+          <a href="#about" data-testid="nav-link-about">about</a>
+          <a href="#projects" data-testid="nav-link-projects">work</a>
+          <a href="#contact" data-testid="nav-link-contact">contact</a>
+        </nav>
       </div>
 
-      <div className="status-card" data-testid="status-card">
-        <span className="status-card-hint">live ci/cd · this site</span>
-        <div className="status-card-head">
-          <span><span className="caret">$</span> ./status --verbose</span>
-          <span className={`badge ${badgeClass}`} data-testid="status-card-badge">{badgeText}</span>
-        </div>
-        <div className="status-card-body">
-          <div className="metric-row">
-            <span className="k">framework</span>
-            <span className="v mono">react-portfolio-selenium-tests</span>
-          </div>
-          <div className="metric-row">
-            <span className="k">last run</span>
-            <span className="v" data-testid="metric-last-run">
-              {run ? relTime(run.startedAt) : '—'}
-            </span>
-          </div>
-          <div className="metric-row">
-            <span className="k">conclusion</span>
-            <span
-              className={`v ${run?.conclusion === 'success' && failed === 0 ? 'pass' : run?.conclusion === 'failure' ? 'fail' : ''}`}
-              data-testid="metric-conclusion"
-            >
-              {run?.conclusion || run?.status || '—'}
-            </span>
-          </div>
-          <div className="metric-row">
-            <span className="k">tests</span>
-            <span className="v mono" data-testid="metric-tests">
-              {allure ? (
-                <>
-                  <span className="num">{testsCount}</span>
-                  <span className="tests-meta">
-                    {' '}/ {total} {failed ? `· ${failed} known-fail` : '· 0 fail'}
-                  </span>
-                </>
-              ) : '—'}
-            </span>
-          </div>
-          <div className="metric-row">
-            <span className="k">duration</span>
-            <span className="v" data-testid="metric-duration">
-              {run ? fmtDuration(run.durationSec) : '—'}
-            </span>
-          </div>
-          <div className="metric-row">
-            <span className="k">commit</span>
-            <span className="v mono accent" data-testid="metric-commit">{run?.commit || '—'}</span>
-          </div>
-        </div>
-      </div>
-    </section>
+      <p className="intro" data-testid="hero-summary">
+        Junior QA engineer and developer on Long Island. I write test
+        automation in C# and build web apps with React and .NET. This site is
+        tested by its own{' '}
+        <a href={FRAMEWORK_REPO_URL} target="_blank" rel="noreferrer">Selenium suite</a>{' '}
+        on every deploy; the latest result is below.
+      </p>
+
+      <p className="intro-links">
+        <a href="#projects" data-testid="hero-cta-projects">View work</a>
+        <a href="#contact" data-testid="hero-cta-contact">Get in touch</a>
+      </p>
+
+      <CiStatus run={run} allure={allure} ready={ready} />
+    </header>
   );
 }
