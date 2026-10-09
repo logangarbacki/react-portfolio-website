@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Trigger Selenium Repo Workflow
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.SELENIUM_REPO_PAT }}
           repository: logangarbacki/react-portfolio-selenium-tests
