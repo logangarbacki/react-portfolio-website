@@ -6,7 +6,7 @@
   align-items: start;
 }
 
-/* small mono eyebrow — no fake "$" prompt */
+/* eyebrow label */
 .hero-left .hero-label {
   font-family: var(--mono);
   font-size: 11.5px;
@@ -63,7 +63,7 @@
 .cmd .caret { color: var(--accent); }
 .cmd:hover .caret { color: var(--terminal); }
 
-/* ---- live CI status card (the one place monospace + a real "$" belong) ---- */
+/* live CI status card */
 .status-card {
   background: var(--paper);
   border: 1px solid var(--rule);

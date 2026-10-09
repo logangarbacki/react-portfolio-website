@@ -9,7 +9,7 @@
   transition: border-color 0.2s, transform 0.2s;
 }
 .project-card:hover { border-color: var(--ink); }
-/* neutral hover sheen (accent-independent) */
+/* hover */
 .project-card::before {
   content: '';
   position: absolute;
@@ -49,11 +49,11 @@
 .project-status::before { content: '✓'; }
 .project-status.dev { background: var(--warn-bg); color: var(--warn); }
 .project-status.dev::before { content: '●'; animation: blink 1.6s steps(1) infinite; }
-/* role/date label (not a pass/fail state) — neutral, no check icon */
+/* role/date label */
 .project-status.role { background: var(--rule-soft); color: var(--ink-2); }
 .project-status.role::before { content: none; }
 
-/* project title = the one display-serif moment in the card */
+/* title */
 .project-suite {
   font-family: var(--display);
   font-size: 22px;
@@ -74,7 +74,7 @@
   margin-bottom: 12px;
   letter-spacing: 0.01em;
 }
-/* prose: real text typeface, not monospace */
+/* description */
 .project-desc {
   font-family: var(--sans);
   font-size: 15px;
