@@ -46,6 +46,8 @@
   gap: 4px 24px;
 }
 .intro-links a { font-weight: 500; }
+.intro a { color: var(--text); text-decoration-color: var(--underline); }
+.intro a:hover { color: var(--accent); text-decoration-color: currentColor; }
 
 @media (max-width: 600px) {
   .hero { padding-top: 56px; }
