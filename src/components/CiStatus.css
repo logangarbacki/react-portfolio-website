@@ -1,0 +1,50 @@
+.ci-status {
+  --dot: var(--warn);
+  margin-top: 40px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted);
+  /* Hide the separator in front of whichever item starts a wrapped line.
+     Only the left edge is clipped, so focus outlines stay visible. */
+  clip-path: inset(-8px -8px -8px 0);
+}
+.ci-status.pass { --dot: var(--pass); }
+.ci-status.fail { --dot: var(--fail); }
+.ci-status.off  { --dot: var(--off); }
+
+.ci-items {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -1.1em;
+}
+.ci-item { white-space: nowrap; }
+.ci-item::before {
+  content: '·';
+  display: inline-block;
+  width: 1.1em;
+  text-align: center;
+}
+
+.ci-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dot);
+  margin-right: 7px;
+  vertical-align: 0.08em;
+}
+
+/* The status word stays uppercase in the DOM because the test suite matches
+   on it; setting it a size down keeps it from shouting. */
+.ci-state {
+  color: var(--text);
+  font-size: 0.82em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.ci-hash {
+  font-family: var(--mono);
+  font-size: 0.93em;
+}

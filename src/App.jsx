@@ -1,4 +1,3 @@
-import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
 import About from './components/About.jsx';
 import Projects from './components/Projects.jsx';
@@ -13,11 +12,12 @@ export default function App() {
 
   return (
     <div className="page">
-      <Navbar />
       <Hero run={run} allure={allure} ready={ready} />
-      <About />
-      <Projects />
-      <Contact />
+      <main>
+        <About />
+        <Projects />
+        <Contact />
+      </main>
       <Footer />
     </div>
   );
