@@ -36,27 +36,19 @@ export default function About() {
       </div>
       <section ref={ref} className="about" id="about" data-testid="about">
         <p className="reveal" data-testid="about-paragraph-1">
-          I'm a self-taught engineer on Long Island, and I work both sides of the
-          same problem: writing the <em>code</em>, and writing the <em>tests</em>{' '}
-          that prove it holds up. Automation frameworks in C#, web apps in React,
-          Next.js, and Django.
+          I'm a QA engineer and developer from Hicksville, on Long Island. I
+          started out in QA at PrintScan, where I tested releases, helped build
+          their test automation in C#, and built the location search that's
+          still on their site today.
         </p>
         <p className="reveal" data-testid="about-paragraph-2">
-          The dashboard above isn't decoration. Every push to <code>main</code>{' '}
-          triggers a Selenium framework I built solo, runs it against the
-          production deploy, and publishes an Allure report. The numbers come
-          straight from the latest run.
+          This site is also my test target. Every deploy to production kicks off
+          my Selenium suite, and the results are published as a public Allure
+          report. The numbers in the card above come straight from the latest run.
         </p>
-        <p className="reveal about-agency" data-testid="about-paragraph-3">
-          I also ship client websites through{' '}
-          <a
-            href="https://garbackidigital.com/work"
-            target="_blank"
-            rel="noreferrer"
-            data-testid="about-agency-link"
-          >
-            Garbacki Digital ↗
-          </a>
+        <p className="reveal about-note" data-testid="about-paragraph-3">
+          I'm looking for a junior QA or developer role on Long Island or in NYC,
+          on-site or hybrid.
         </p>
       </section>
     </>
