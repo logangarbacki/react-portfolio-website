@@ -1,48 +1,24 @@
-/* One typeface for everything: Inter, loaded in index.html.
-   Monospace is only used for the commit hash in the CI status line. */
+/* Dark engineering notebook: graph paper, a serif body (Newsreader), and
+   handwritten notes (Caveat), both loaded in index.html. */
 :root {
-  color-scheme: light dark;
+  color-scheme: dark;
 
-  --bg: #f8f9fa;
-  --text: #16181d;
-  --muted: #5b6170;
-  --accent: #1f5fbf;
-  --accent-soft: #b9cdee;
-  --underline: #c9cdd4;
-  --field: #ffffff;
-  --field-border: #8a909c;
-  --pass: #1d7f4e;
-  --pass-tint: #e6f3eb;
-  --warn: #9a5b00;
-  --warn-tint: #fbf1df;
-  --fail: #b42318;
-  --fail-tint: #fcebe9;
-  --off: #8a909c;
-  --off-tint: #eceef1;
+  --bg: #131a24;
+  --grid: rgba(140, 165, 205, 0.075);
+  --text: #e8ebf1;
+  --muted: #a2acbc;
+  --faint: #6f7a8c;
+  --pen: #8fb4ff;
+  --red: #ff8b7d;
+  --pass: #7fdca2;
+  --warn: #f0c46e;
+  --tape: rgba(250, 214, 120, 0.55);
+  --polaroid: #f2f2ee;
+  --line: #3a4557;
 
-  --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #15171c;
-    --text: #e6e8ec;
-    --muted: #9aa1ad;
-    --accent: #7fa9f2;
-    --accent-soft: #3a4f78;
-    --underline: #4a505c;
-    --field: #1c1f25;
-    --field-border: #6b7280;
-    --pass: #4cc38a;
-    --pass-tint: #16261e;
-    --warn: #e0a84e;
-    --warn-tint: #2a2214;
-    --fail: #f07a6a;
-    --fail-tint: #2c1a18;
-    --off: #6b7280;
-    --off-tint: #1f2228;
-  }
 }
 
 *, *::before, *::after {
@@ -57,48 +33,53 @@ html {
 }
 
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 28px 28px;
   color: var(--text);
-  font-family: var(--sans);
-  font-size: 17px;
-  line-height: 1.65;
-  font-weight: 400;
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.7;
   -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: var(--accent);
+  color: var(--pen);
   text-decoration: underline;
-  text-decoration-color: var(--accent-soft);
+  text-decoration-color: color-mix(in srgb, var(--pen) 40%, transparent);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.22em;
+  text-underline-offset: 0.2em;
   transition: text-decoration-color 0.15s ease, color 0.15s ease;
 }
 a:hover { text-decoration-color: currentColor; }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--pen);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
-/* Single centered column: 640px of content plus a 20px gutter on each side. */
+/* One centered column; margin notes hang outside it on wide screens. */
 .page {
-  max-width: 680px;
+  max-width: 768px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px 40px;
 }
 
 p { text-wrap: pretty; }
 
 .section {
+  position: relative;
   margin-top: 96px;
   scroll-margin-top: 40px;
 }
 .section h2 {
-  font-size: 16px;
+  font-size: 32px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   margin-bottom: 20px;
 }
 .section > p + p { margin-top: 16px; }
@@ -117,6 +98,7 @@ html.js .reveal.in {
   html.js .reveal { opacity: 1; transform: none; }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
+  body { font-size: 19px; }
   .section { margin-top: 72px; }
 }
