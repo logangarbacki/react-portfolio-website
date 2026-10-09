@@ -1,6 +1,5 @@
 import './App.css';
 
-import StatusBar from './components/StatusBar.jsx';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
 import About from './components/About.jsx';
@@ -16,7 +15,6 @@ export default function App() {
 
   return (
     <div className="app-root">
-      <StatusBar run={run} ready={ready} />
       <Navbar />
       <Hero run={run} allure={allure} ready={ready} />
       <About />
