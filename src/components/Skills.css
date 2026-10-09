@@ -1,16 +1,19 @@
-.skills { display: grid; gap: 12px; }
+.skills { display: grid; gap: 14px; }
 
 .skills-row {
   display: grid;
-  grid-template-columns: 120px 1fr;
-  gap: 2px 20px;
+  grid-template-columns: 150px 1fr;
+  gap: 0 20px;
+  align-items: baseline;
 }
 .skills-row dt {
-  font-weight: 600;
-  color: var(--accent);
+  font-family: var(--hand);
+  font-size: 27px;
+  line-height: 1.2;
+  color: var(--pen);
 }
 .skills-row dd { margin: 0; }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .skills-row { grid-template-columns: 1fr; }
 }

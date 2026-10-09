@@ -1,5 +1,6 @@
 import './Projects.css';
 import { useReveal } from '../hooks/useReveal.js';
+import Note from './Note.jsx';
 
 const PROJECTS = [
   {
@@ -18,7 +19,7 @@ const PROJECTS = [
   },
   {
     title: 'PrintScan Location Search',
-    status: 'In production',
+    status: 'in production',
     tone: 'pass',
     stack: 'C#, .NET, Razor Pages',
     desc: (
@@ -32,10 +33,12 @@ const PROJECTS = [
     links: [
       { href: 'https://printscan.com/Locations/Search', label: 'See it live', testid: 'project-2-live' },
     ],
+    shot: { src: '/printscan-locations.jpg', alt: 'The PrintScan locations page' },
+    marginNote: { side: 'right', top: 150, tilt: -4, text: 'still live after the acquisition!' },
   },
   {
     title: 'Selenium UI Test Framework',
-    status: 'Live CI',
+    status: 'live CI',
     tone: 'accent',
     stack: 'C#, NUnit, Selenium WebDriver 4, Allure, GitHub Actions',
     desc: (
@@ -44,17 +47,20 @@ const PROJECTS = [
         using the Page Object Model, run against production by GitHub Actions
         on every deploy and nightly, with a public Allure report. Two problems
         I had to solve: elements that only render once they're scrolled into
-        view, and animated hero text that Selenium read as empty.
+        view, and animated hero text that Selenium read as empty. The week I
+        brought it back, it caught a real bug: the status panel up top was
+        reading the very test run that was checking it.
       </>
     ),
     links: [
       { href: 'https://github.com/logangarbacki/react-portfolio-selenium-tests', label: 'GitHub', testid: 'project-3-github' },
       { href: 'https://logangarbacki.github.io/react-portfolio-selenium-tests/', label: 'Allure report', testid: 'project-3-allure' },
     ],
+    marginNote: { side: 'left', top: 120, tilt: -5, tone: 'red', desktopOnly: true, text: 'bug found & fixed →' },
   },
   {
     title: 'Lead Generation Tool',
-    status: 'Personal project',
+    status: 'personal project',
     tone: 'muted',
     stack: 'Next.js, TypeScript, Supabase, Google Places API, OpenRouter',
     desc: (
@@ -80,13 +86,14 @@ export default function Projects() {
           className="project reveal"
           data-testid={`project-card-${i + 1}`}
         >
-          <h3 className="project-title" data-testid={`project-${i + 1}-title`}>{p.title}</h3>
-          {/* The test suite finds the stack and description by class name. */}
-          <p className="project-meta">
+          <h3 className="project-title">
+            <span data-testid={`project-${i + 1}-title`}>{p.title}</span>
             <span className={`project-status ${p.tone}`} data-testid={`project-${i + 1}-status`}>{p.status}</span>
-            <span className="project-stack">{p.stack}</span>
-          </p>
+          </h3>
+          {/* The test suite finds the stack and description by class name. */}
+          <p className="project-stack">{p.stack}</p>
           <p className="project-desc">{p.desc}</p>
+          {p.shot && <img className="project-shot" src={p.shot.src} alt={p.shot.alt} loading="lazy" />}
           {p.links ? (
             <p className="link-row">
               {p.links.map((l) => (
@@ -97,6 +104,17 @@ export default function Projects() {
             </p>
           ) : (
             <p className="project-note">{p.note}</p>
+          )}
+          {p.marginNote && (
+            <Note
+              side={p.marginNote.side}
+              top={p.marginNote.top}
+              tilt={p.marginNote.tilt}
+              tone={p.marginNote.tone}
+              desktopOnly={p.marginNote.desktopOnly}
+            >
+              {p.marginNote.text}
+            </Note>
           )}
         </article>
       ))}

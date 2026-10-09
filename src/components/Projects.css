@@ -1,46 +1,55 @@
-.project + .project { margin-top: 44px; }
+.project { position: relative; }
+.project + .project { margin-top: 52px; }
 
 .project-title {
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.45;
-}
-
-.project-meta {
-  margin-top: 4px;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px 14px;
-  font-size: 15px;
-  color: var(--muted);
-}
-.project-status {
-  font-size: 13px;
+  gap: 0 14px;
+  font-size: 24px;
   font-weight: 600;
-  padding: 1px 8px;
-  border-radius: 999px;
-  background: var(--off-tint);
-  color: var(--muted);
-}
-.project-status.pass { background: var(--pass-tint); color: var(--pass); }
-.project-status.accent { background: var(--accent-soft); color: var(--text); }
-@media (prefers-color-scheme: dark) {
-  .project-status.accent { color: var(--text); }
+  line-height: 1.35;
 }
 
-.project-desc { margin-top: 10px; }
+/* Status written in pen next to the title. */
+.project-status {
+  font-family: var(--hand);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--muted);
+  transform: rotate(-2deg);
+}
+.project-status.pass { color: var(--pass); }
+.project-status.accent { color: var(--pen); }
+
+.project-stack {
+  margin-top: 2px;
+  font-size: 17px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.project-desc { margin-top: 8px; }
+
+.project-shot {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
 
 .link-row {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 20px;
-  font-size: 15px;
+  gap: 4px 22px;
+  font-size: 18px;
 }
 
 .project-note {
   margin-top: 8px;
-  font-size: 15px;
-  color: var(--muted);
+  font-size: 17px;
+  font-style: italic;
+  color: var(--faint);
 }
