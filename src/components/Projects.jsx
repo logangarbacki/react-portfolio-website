@@ -73,6 +73,25 @@ const PROJECTS = [
     ),
     note: 'Private repo',
   },
+  {
+    title: 'Little Lemon Restaurant App',
+    status: 'live app',
+    tone: 'pass',
+    stack: 'React, Django REST Framework, SQL, Vercel, Railway',
+    desc: (
+      <>
+        A full-stack restaurant site with a menu, cart, table reservations, and
+        accounts. The React front end talks to a Django REST API with token
+        login, and carts and reservations are saved to a SQL database. It
+        started as my Meta front-end certificate capstone, and I built the real
+        backend on top of it.
+      </>
+    ),
+    links: [
+      { href: 'https://meta-front-end-developer-capstone-three.vercel.app/', label: 'See it live', testid: 'project-5-live' },
+      { href: 'https://github.com/logangarbacki/meta-front-end-developer-capstone', label: 'GitHub', testid: 'project-5-github' },
+    ],
+  },
 ];
 
 export default function Projects() {
