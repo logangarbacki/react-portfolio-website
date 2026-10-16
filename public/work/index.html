@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#131a24" />
+  <title>Logan Garbacki — Work</title>
+  <link rel="icon" href="/favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #131a24;
+      --grid: rgba(140, 165, 205, 0.075);
+      --card: rgba(19, 26, 36, 0.86);
+      --text: #e8ebf1;
+      --muted: #a2acbc;
+      --faint: #6f7a8c;
+      --pen: #8fb4ff;
+      --pass: #7fdca2;
+      --warn: #f0c46e;
+      --line: #3a4557;
+      --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+      --hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: var(--text);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--pen); }
+    :focus-visible { outline: 2px solid var(--pen); outline-offset: 3px; border-radius: 4px; }
+
+    .page { max-width: 600px; margin: 0 auto; padding: 28px 16px 56px; }
+
+    /* Header */
+    .top { display: flex; align-items: center; gap: 16px; }
+    .photo {
+      flex: none; width: 76px; height: 76px; object-fit: cover;
+      border: 4px solid #f2f2ee; border-bottom-width: 12px; border-radius: 2px;
+      transform: rotate(-3deg); box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    }
+    h1 { font-size: 32px; line-height: 1.1; font-weight: 600; letter-spacing: -0.01em; }
+    .role { color: var(--muted); font-size: 16px; margin-top: 4px; }
+    .hand { font-family: var(--hand); color: var(--pen); font-size: 24px; line-height: 1.2; }
+    .intro { margin: 18px 0 6px; transform: rotate(-1deg); }
+
+    .quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; padding: 8px 16px; border-radius: 999px;
+      border: 1.5px solid color-mix(in srgb, var(--pen) 55%, transparent);
+      color: var(--text); text-decoration: none; font-size: 16px; background: var(--card);
+    }
+    .btn.primary { background: var(--pen); color: #0f1520; border-color: var(--pen); font-weight: 600; }
+    .btn:active { transform: translateY(1px); }
+
+    h2 {
+      font-family: var(--hand); font-weight: 600; font-size: 34px; color: var(--pen);
+      margin: 40px 0 12px; line-height: 1;
+    }
+
+    /* Project cards */
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+      padding: 18px 18px 16px; margin-bottom: 16px;
+    }
+    .card h3 { font-size: 22px; line-height: 1.25; font-weight: 600; }
+    .meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 4px 0 10px; font-size: 15px; color: var(--muted); }
+    .tag { font-family: var(--hand); font-size: 20px; line-height: 1; }
+    .tag.pass { color: var(--pass); }
+    .tag.warn { color: var(--warn); }
+    .tag.muted { color: var(--faint); }
+    .card p { color: var(--text); font-size: 17px; }
+    .card p + p { margin-top: 8px; }
+    .shot {
+      display: block; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--line);
+      margin: 4px 0 12px;
+    }
+    .stack { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 2px; padding: 0; list-style: none; }
+    .stack li {
+      font-size: 13px; line-height: 1; padding: 6px 9px; border-radius: 6px;
+      background: color-mix(in srgb, var(--pen) 12%, transparent); color: #c9d8ff;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .private { margin-top: 12px; font-size: 15px; color: var(--faint); font-style: italic; }
+    .quote {
+      margin: 12px 0 2px; padding: 4px 0 4px 14px; border-left: 3px solid var(--pass);
+      font-style: italic; font-size: 17px;
+    }
+    .quote cite { display: block; font-style: normal; font-size: 14px; color: var(--muted); margin-top: 2px; }
+    .sub-head { margin-top: 18px; font-weight: 600; font-size: 18px; }
+
+    /* Certificates and experience */
+    .list { list-style: none; padding: 0; }
+    .list li { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .list li:last-child { border-bottom: 0; }
+    .list .name { font-weight: 600; font-size: 17px; }
+    .list .sub { color: var(--muted); font-size: 15px; }
+
+    footer { margin-top: 40px; color: var(--muted); font-size: 15px; text-align: center; }
+    footer .hand { font-size: 22px; display: block; margin-bottom: 6px; }
+
+    @media (min-width: 640px) {
+      .page { padding-top: 48px; }
+      h1 { font-size: 38px; }
+      .photo { width: 92px; height: 92px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="top">
+        <img class="photo" src="/logan.jpg" alt="Logan Garbacki" width="92" height="92" />
+        <div>
+          <h1>Logan Garbacki</h1>
+          <p class="role">Junior developer &amp; QA engineer · Hicksville, NY</p>
+        </div>
+      </div>
+      <p class="hand intro">everything I've built, in one place ↓</p>
+      <nav class="quick" aria-label="Quick links">
+        <a class="btn primary" href="/work/Logan_Garbacki_Resume.pdf">Resume (PDF)</a>
+        <a class="btn" href="https://github.com/logangarbacki" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="btn" href="https://linkedin.com/in/logangarbacki" target="_blank" rel="noreferrer">LinkedIn</a>
+        <a class="btn" href="mailto:contact@logangarbacki.dev">Email</a>
+      </nav>
+    </header>
+
+    <h2>Work</h2>
+
+    <article class="card">
+      <h3>PrintScan Location Search</h3>
+      <div class="meta"><span class="tag pass">in production</span><span>PrintScan, 2023</span></div>
+      <img class="shot" src="/printscan-locations.jpg" alt="The PrintScan locations search page" width="722" height="428" loading="lazy" />
+      <p>The location search on printscan.com: a database-driven directory with a page for every PrintScan location, built to improve navigation and local SEO. I built it while I was on the QA team, and it's still live after First Advantage acquired the company.</p>
+      <ul class="stack"><li>C#</li><li>.NET</li><li>Razor Pages</li><li>SQL database</li></ul>
+      <div class="links">
+        <a class="btn" href="https://printscan.com/Locations/Search" target="_blank" rel="noreferrer">See it live</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Little Lemon Restaurant App</h3>
+      <div class="meta"><span class="tag pass">live app</span><span>2026</span></div>
+      <p>A full-stack restaurant site with a menu, cart, table reservations and accounts. The React front end talks to a Django REST API with token login, and carts and reservations are saved to a SQL database. It started as a Meta certificate capstone, and I built the real backend on top of it.</p>
+      <ul class="stack"><li>React</li><li>Django REST Framework</li><li>SQL</li><li>Vercel</li><li>Railway</li></ul>
+      <div class="links">
+        <a class="btn" href="https://meta-front-end-developer-capstone-three.vercel.app/" target="_blank" rel="noreferrer">See it live</a>
+        <a class="btn" href="https://github.com/logangarbacki/meta-front-end-developer-capstone" target="_blank" rel="noreferrer">Code</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>logangarbacki.dev</h3>
+      <div class="meta"><span class="tag pass">live site</span><span>2025–2026</span></div>
+      <p>My portfolio site. It pulls the latest test run from the GitHub API and draws one checkmark per test, so visitors see whether my own test suite is passing right now.</p>
+      <ul class="stack"><li>React</li><li>Vite</li><li>JavaScript</li><li>GitHub API</li><li>Vercel</li></ul>
+      <div class="links">
+        <a class="btn" href="/">See it live</a>
+        <a class="btn" href="https://github.com/logangarbacki/react-portfolio-website" target="_blank" rel="noreferrer">Code</a>
+      </div>
+    </article>
+
+    <article class="card">
+      <h3>Selenium Test Framework</h3>
+      <div class="meta"><span class="tag pass">49 tests</span><span>2025–2026</span></div>
+      <p>The automated test suite for my portfolio: smoke, regression, negative and end-to-end tests in C#, built with the Page Object Model. GitHub Actions runs it against the live site and publishes a public Allure report. It caught a real bug: the site's status panel was reading the very test run that was checking it.</p>
+      <ul class="stack"><li>C#</li><li>NUnit</li><li>Selenium WebDriver 4</li><li>Allure</li><li>GitHub Actions</li></ul>
+      <div class="links">
+        <a class="btn" href="https://logangarbacki.github.io/react-portfolio-selenium-tests/" target="_blank" rel="noreferrer">Test report</a>
+        <a class="btn" href="https://github.com/logangarbacki/react-portfolio-selenium-tests" target="_blank" rel="noreferrer">Code</a>
+      </div>
+    </article>
+
+    <article class="card" id="garbacki-digital">
+      <h3>Garbacki Digital</h3>
+      <div class="meta"><span class="tag warn">freelance</span><span>2026–now</span></div>
+      <p>Websites for Long Island businesses. Two are live for paying clients, and both left 5-star Google reviews. I've also built eight concept sites, each designed for a different local industry.</p>
+      <blockquote class="quote">"Logan created my website completely from scratch."<cite>Beds &amp; Masonry, Google review</cite></blockquote>
+      <div class="links">
+        <a class="btn" href="https://bedsandmasonry.com" target="_blank" rel="noreferrer">Beds &amp; Masonry</a>
+        <a class="btn" href="https://houseoflucany.com" target="_blank" rel="noreferrer">House of Lucany</a>
+        <a class="btn" href="https://garbackidigital.com/work" target="_blank" rel="noreferrer">All sites</a>
+      </div>
+      <p class="sub-head">Lead-finding tool</p>
+      <p>It pulls local businesses from the Google Places API, keeps the ones with no website, ranks them by reviews and rating, and drafts outreach with an LLM.</p>
+      <ul class="stack"><li>Next.js</li><li>TypeScript</li><li>Supabase</li><li>Google Places API</li><li>LLM APIs</li></ul>
+      <p class="private">The lead tool's code is private. Happy to demo it.</p>
+    </article>
+
+    <h2>Experience</h2>
+    <ul class="list">
+      <li><div class="name">Freelance Web Developer, Garbacki Digital</div><div class="sub">May 2026 – now · 2 live client sites, both with 5-star reviews</div></li>
+      <li><div class="name">Content Creator, YouTube</div><div class="sub">Jan 2024 – Jun 2025 · 40+ videos, 123K+ views</div></li>
+      <li><div class="name">Quality Assurance Specialist, PrintScan</div><div class="sub">Jul 2023 – Dec 2023 · helped build a C# Selenium regression suite that cut manual testing by over 40%</div></li>
+      <li><div class="name">Guest Advocate, Target</div><div class="sub">Dec 2021 – Mar 2023</div></li>
+    </ul>
+
+    <h2>Certificates</h2>
+    <ul class="list">
+      <li><div class="name">Meta Full-Stack Engineer Certificate</div><div class="sub">Coursera · <a href="https://www.credly.com/badges/6689409f-078c-41dd-a41d-2f407be61bc9" target="_blank" rel="noreferrer">Verify on Credly</a></div></li>
+      <li><div class="name">Software Testing, Deployment, and Maintenance Strategies</div><div class="sub">Coursera · <a href="https://www.credly.com/badges/e546b022-681e-4ff4-85e2-be2d931839b9" target="_blank" rel="noreferrer">Verify on Credly</a></div></li>
+      <li><div class="name">Software QA &amp; Test Automation Engineering</div><div class="sub">Coursera</div></li>
+      <li><div class="name">Selenium 4 Fundamentals with C#</div><div class="sub">Pluralsight</div></li>
+      <li><div class="name">Foundational C# with Microsoft</div><div class="sub">freeCodeCamp</div></li>
+      <li><div class="name">Claude Code in Action</div><div class="sub">Anthropic</div></li>
+    </ul>
+
+    <footer>
+      <span class="hand">thanks for looking!</span>
+      <a href="mailto:contact@logangarbacki.dev">contact@logangarbacki.dev</a> · <a href="/">logangarbacki.dev</a>
+    </footer>
+  </main>
+</body>
+</html>
