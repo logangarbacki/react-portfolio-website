@@ -8,7 +8,7 @@ Live site: https://logangarbacki.dev
 
 - A push to `main` here triggers the Selenium suite in the test repo through a `repository_dispatch` event.
 - The suite runs against the production site and publishes an Allure report to GitHub Pages.
-- The test status panel at the top of the homepage draws one checkmark per test. It reads the latest workflow run from the GitHub API and the test totals from the Allure summary, so it shows the real result of the last run.
+- The test status panel at the top of the homepage draws one checkmark per test. It reads the test totals from the Allure summary and the run details (commit, link, outcome) from a `ci-run.json` file the workflow publishes alongside the report, so it shows the real result of the last run without depending on the rate-limited GitHub API.
 
 ## Built to be tested
 

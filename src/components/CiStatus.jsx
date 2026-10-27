@@ -3,11 +3,12 @@ import { relTime, fmtDuration } from '../utils/format';
 import { ALLURE_URL } from '../hooks/useLiveStatus.js';
 
 // One pen mark per test in the latest report: a check for each pass, a cross
-// for each failure, a dash for each skip.
+// for each failure, a dash for each skip. Allure's "unknown" status is drawn as
+// a skip so the strip always has exactly `total` marks.
 function TestStrip({ allure }) {
   if (!allure || !allure.total) return null;
   const failed = (allure.failed || 0) + (allure.broken || 0);
-  const skipped = allure.skipped || 0;
+  const skipped = (allure.skipped || 0) + (allure.unknown || 0);
   const cells = [
     ...Array(allure.passed || 0).fill('pass'),
     ...Array(failed).fill('fail'),
