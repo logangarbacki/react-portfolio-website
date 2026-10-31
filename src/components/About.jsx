@@ -8,7 +8,9 @@ export default function About() {
       <p className="reveal" data-testid="about-paragraph-1">
         I'm a QA engineer and developer from Hicksville, on Long Island. At
         PrintScan I tested releases, helped build their test automation in C#,
-        and built the location search that's still on their site today.
+        and built the location search that's still on their site today. I also
+        run <a href="https://garbackidigital.com/">Garbacki Digital</a>, where I
+        build websites for small businesses on Long Island.
       </p>
       <p className="reveal" data-testid="about-paragraph-2">
         I treat this site like a production app. The Selenium suite covers every
