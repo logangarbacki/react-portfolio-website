@@ -107,11 +107,8 @@ const PROJECTS = [
       </>
     ),
     links: [
-      { href: 'https://bedsandmasonry.com', label: 'Beds & Masonry', testid: 'project-6-client-1' },
-      { href: 'https://houseoflucany.com', label: 'House of Lucany', testid: 'project-6-client-2' },
       { href: 'https://garbackidigital.com/work', label: 'All sites', testid: 'project-6-site' },
     ],
-    marginNote: { side: 'right', top: 110, tilt: 3, text: 'two clients, two 5-star reviews' },
   },
 ];
 
