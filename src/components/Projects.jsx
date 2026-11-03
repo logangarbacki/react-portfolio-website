@@ -92,6 +92,27 @@ const PROJECTS = [
       { href: 'https://github.com/logangarbacki/meta-front-end-developer-capstone', label: 'GitHub', testid: 'project-5-github' },
     ],
   },
+  {
+    title: 'Garbacki Digital',
+    status: 'my business',
+    tone: 'pass',
+    stack: 'Next.js, TypeScript, LLM APIs',
+    desc: (
+      <>
+        My own business, building websites for small businesses on Long
+        Island. I handle the whole job: the first call, the design and build,
+        the domain and hosting, and the fixes after launch. Two client sites are live, and
+        both clients left 5-star Google reviews. I've also designed eight
+        concept sites, each one built for a different local industry.
+      </>
+    ),
+    links: [
+      { href: 'https://bedsandmasonry.com', label: 'Beds & Masonry', testid: 'project-6-client-1' },
+      { href: 'https://houseoflucany.com', label: 'House of Lucany', testid: 'project-6-client-2' },
+      { href: 'https://garbackidigital.com/work', label: 'All sites', testid: 'project-6-site' },
+    ],
+    marginNote: { side: 'right', top: 110, tilt: 3, text: 'two clients, two 5-star reviews' },
+  },
 ];
 
 export default function Projects() {
